@@ -30,7 +30,7 @@ func reader(conn *websocket.Conn) {
 			return 
 		}
 
-		log.Println(string(p))
+		log.Println("Received message: ", string(p))
 
 		if err := conn.WriteMessage(messageType, p); err != nil {
 			log.Println(err)
@@ -53,7 +53,7 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	log.Println("Client successfuly connected...")
+	log.Println("Client successfully connected...")
 
 	reader(ws)
 }
