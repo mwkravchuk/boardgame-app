@@ -22,12 +22,30 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "home page")
 }
 
+func reader(conn *websocket.Conn) {
+	for {
+		messageType, p, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return 
+		}
+
+		log.Println(string(p))
+
+		if err := conn.WriteMessage(messageType, p); err != nil {
+			log.Println(err)
+			return
+		}
+
+	}
+}
+
 // A websocket is an upgraded version of a basic HTTP connection
 // HTTP closes after each interaction, but websockets stay open, so its better for real-time stuff
 // So the goal is to upgrade from HTTP conn to websocket
 func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Take any incoming http request, and accept it regardless of origin
-	upgrader.CheckOrigin = func(r *htpp.Request) bool { return true }
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 
 	// Upgrade the connection (upgraded from basic http conn to websocket)
 	ws, err := upgrader.Upgrade(w, r, nil)
@@ -36,6 +54,8 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Client successfuly connected...")
+
+	reader(ws)
 }
 
 func setupRoutes() {
