@@ -9,40 +9,65 @@ import (
 	"sync"
 )
 
+type Server struct {
+	clients map[*websocket.Conn]bool // store active connections
+	clientsMutex sync.Mutex
+}
+
+func NewServer() *Server {
+	return &Server {
+		clients: make(map[*websocket.Conn]bool),
+	}
+}
+
+
 type Message struct {
 	Type string      `json:"type"`
+	Sender string    `json:"sender"`
 	Data interface{} `json:"data"`
 }
 
-var clients = make(map[*websocket.Conn]bool) // store active connections
-var clientsMutex sync.Mutex                 // Mutex to protect access to `clients`
-
-var messageHandlers = map[string]func(*websocket.Conn, Message){
+var messageHandlers = map[string]func(*Server, *websocket.Conn, interface{}){
 	"chat":      handleChatMessage,
 	"game_state": handleGameState,
 }
 
-func handleChatMessage(conn *websocket.Conn, msg Message) {
+func handleChatMessage(s *Server, conn *websocket.Conn, data interface{}) {
 	// Process the chat message (e.g., broadcast it to all players in the room)
-	log.Println("Chat message received: ", msg.Data)
+	log.Println("Chat message received: ", data)
+
+	sender := conn.RemoteAddr().String()
+	log.Println("sender: ", sender);
+	message := Message{
+		Type: "chat",
+		Sender: sender,
+		Data: data,
+	}
+
+	// Convert the message data to JSON
+	jsonData, err := json.Marshal(message)
+	if err != nil {
+		log.Println("Error marshalling message:", err)
+		return
+	}
 
 	// Iterate over all clients and send the message to them
-	clientsMutex.Lock() // Lock the mutex before accessing clients map
-	defer clientsMutex.Unlock()
+	s.clientsMutex.Lock()
+	defer s.clientsMutex.Unlock()
 
-	for client := range clients {
-		go func(client *websocket.Conn) {
-			err := client.WriteMessage(websocket.TextMessage, msg.Data)
+	for client := range s.clients {
+		go func(client *websocket.Conn, msg []byte) {
+			err := client.WriteMessage(websocket.TextMessage, msg)
 			if err != nil {
 				log.Println("Error sending message to client: ", err)
 			}
-		}(client)
+		}(client, jsonData)
 	}
 }
 
-func handleGameState(conn *websocket.Conn, msg Message) {
+func handleGameState(s *Server, conn *websocket.Conn, data interface{}) {
 	// Process the game state message (e.g., update game state, validate move)
-	log.Println("Game state update received: ", msg.Data)
+	log.Println("Game state update received: ", data)
 	// Update the game state, check for win conditions, etc.
 }
 
@@ -52,13 +77,8 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true }, // Allow any origin
 }
 
-func reader(conn *websocket.Conn) {
-	defer func() {
-		clientsMutex.Lock()
-		delete(clients, conn) // Remove the client from the map when it disconnects
-		clientsMutex.Unlock()
-		conn.Close()
-	}()
+func (s *Server) readLoop(conn *websocket.Conn) {
+	defer s.removeClient(conn)
 
 	for {
 		// Read any message sent over the websocket connection
@@ -77,20 +97,35 @@ func reader(conn *websocket.Conn) {
 
 		// Handle the message based on its type
 		if handler, exists := messageHandlers[msg.Type]; exists {
-			handler(conn, msg)
+			handler(s, conn, msg.Data)
 		} else {
 			log.Println("Unknown message type:", msg.Type)
 		}
 	}
 }
 
-// Simple homepage for our server
-func homePage(w http.ResponseWriter, r *http.Request) {
+// Functions to add and remove clients
+func (s *Server) addClient(conn *websocket.Conn) {
+	s.clientsMutex.Lock()
+	defer s.clientsMutex.Unlock()
+
+	s.clients[conn] = true
+}
+
+func (s *Server) removeClient(conn *websocket.Conn) {
+	s.clientsMutex.Lock()
+	defer s.clientsMutex.Unlock()
+	
+	delete(s.clients, conn)
+}
+
+// Home endpoint just prints
+func (s *Server) homeEndpoint(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "home page")
 }
 
-// A websocket endpoint handler to upgrade HTTP connection to WebSocket
-func wsEndpoint(w http.ResponseWriter, r *http.Request) {
+// Websocket endpoint to upgrade HTTP connection to WebSocket
+func (s *Server) wsEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Upgrade the connection from HTTP to WebSocket
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -99,22 +134,20 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Client successfully connected:", ws.RemoteAddr())
-
-	clientsMutex.Lock()
-	clients[ws] = true // Add the new client to the map
-	clientsMutex.Unlock()
+	s.addClient(ws)
 
 	// Start reading from the WebSocket
-	reader(ws)
+	s.readLoop(ws)
 }
 
-func setupRoutes() {
-	http.HandleFunc("/", homePage)
-	http.HandleFunc("/ws", wsEndpoint)
+func setupRoutes(s *Server) {
+	http.HandleFunc("/", s.homeEndpoint)
+	http.HandleFunc("/ws", s.wsEndpoint)
 }
 
 func main() {
 	fmt.Println("Go WebSockets Server Running...")
-	setupRoutes()
+	server := NewServer()
+	setupRoutes(server)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

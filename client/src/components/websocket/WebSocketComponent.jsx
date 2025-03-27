@@ -23,12 +23,15 @@ const WebSocketComponent = ({ setChatHistory }) => {
     // it back, this is our client receiving it, and then just logging it. Our server echoes messages
     ws.onmessage = (msg) => {
       console.log("Received message: ", msg);
+      const parsedData = JSON.parse(msg.data); // Parse JSON message
+      console.log("Received message:", parsedData);
 
       if (msg.data) {
         setChatHistory(prevHistory => [
-          ...prevHistory, msg.data
-        ])
-      }
+          ...prevHistory,
+          `${parsedData.sender}: ${parsedData.data}`
+        ]);
+      };
 
     }
 
