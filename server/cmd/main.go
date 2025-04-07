@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"sync"
+	"math/rand"
 )
 
 type Server struct {
@@ -28,7 +29,8 @@ type Message struct {
 }
 
 var messageHandlers = map[string]func(*Server, *websocket.Conn, interface{}){
-	"chat":      handleChatMessage,
+	"chat":       handleChatMessage,
+	"roll_dice":  handleRollDice,
 	"game_state": handleGameState,
 }
 
@@ -42,6 +44,46 @@ func handleChatMessage(s *Server, conn *websocket.Conn, data interface{}) {
 		Type: "chat",
 		Sender: sender,
 		Data: data,
+	}
+
+	// Convert the message data to JSON
+	jsonData, err := json.Marshal(message)
+	if err != nil {
+		log.Println("Error marshalling message:", err)
+		return
+	}
+
+	// Iterate over all clients and send the message to them
+	s.clientsMutex.Lock()
+	defer s.clientsMutex.Unlock()
+
+	for client := range s.clients {
+		go func(client *websocket.Conn, msg []byte) {
+			err := client.WriteMessage(websocket.TextMessage, msg)
+			if err != nil {
+				log.Println("Error sending message to client: ", err)
+			}
+		}(client, jsonData)
+	}
+}
+
+func handleRollDice(s *Server, conn *websocket.Conn, data interface{}) {
+	log.Println("Dice roll received")
+
+	dice1 := rand.Intn(6) + 1
+	dice2 := rand.Intn(6) + 1
+
+	rollResult := map[string]int{
+		"dice1": dice1,
+		"dice2": dice2,
+	}
+
+	sender := conn.RemoteAddr().String()
+	log.Println("sender: ", sender);
+	message := Message{
+		Type: "roll_dice",
+		Sender: sender,
+		Data: rollResult,
 	}
 
 	// Convert the message data to JSON

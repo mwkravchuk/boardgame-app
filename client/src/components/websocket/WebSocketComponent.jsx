@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ChatBox from "../ChatBox";
+import Board from "../Board";
 
 const WebSocketComponent = ({ setChatHistory }) => {
 
@@ -27,11 +28,18 @@ const WebSocketComponent = ({ setChatHistory }) => {
       console.log("Received message:", parsedData);
 
       if (msg.data) {
-        setChatHistory(prevHistory => [
-          ...prevHistory,
-          `${parsedData.sender}: ${parsedData.data}`
-        ]);
-      };
+        if (parsedData.type === "chat") {
+          setChatHistory(prevHistory => [
+            ...prevHistory,
+            `${parsedData.sender}: ${parsedData.data}`
+          ]);
+        } else if (parsedData.type === "roll_dice") {
+          setChatHistory(prevHistory => [
+            ...prevHistory,
+            `${parsedData.sender}rolled: ${parsedData.data.dice1} ${parsedData.data.dice2}`
+          ]);
+        }
+      }
 
     }
 
@@ -47,7 +55,8 @@ const WebSocketComponent = ({ setChatHistory }) => {
 
   return (
     <div>
-      {ws && <ChatBox ws={ws} />}
+      {ws && <ChatBox ws={ws}/>}
+      {ws && <Board ws={ws}/>}
     </div>
   )
 };
