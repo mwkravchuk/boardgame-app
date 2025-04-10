@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import ChatBox from "../ChatBox";
 import Board from "../Board";
 
+import styles from "./WebSocketComponent.module.css";
+
 const WebSocketComponent = ({ setChatHistory }) => {
 
   const [ws, setWs] = useState(null);
@@ -20,8 +22,6 @@ const WebSocketComponent = ({ setChatHistory }) => {
       console.log("socket closed connection: ", event);
     }
 
-    // Remember that our server just reads and then writes the message back. So when it writes
-    // it back, this is our client receiving it, and then just logging it. Our server echoes messages
     ws.onmessage = (msg) => {
       console.log("Received message: ", msg);
       const parsedData = JSON.parse(msg.data); // Parse JSON message
@@ -54,7 +54,7 @@ const WebSocketComponent = ({ setChatHistory }) => {
   }, [setChatHistory]);
 
   return (
-    <div>
+    <div className={styles.wsContainer}>
       {ws && <ChatBox ws={ws}/>}
       {ws && <Board ws={ws}/>}
     </div>
