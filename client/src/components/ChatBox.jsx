@@ -1,31 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useWebSocket } from "../contexts/WebSocketProvider";
 
-const ChatBox = ({ ws }) => {
+import styles from "./ChatBox.module.css";
 
-  const [message, setMessage] = useState("");
+const ChatBox = () => {
+
+  const { sendMessage, addListener, removeListener } = useWebSocket();
+
+  const [messages, setMessages] = useState([]);
+  const [messageToSend, setMessageToSend] = useState("");
+
+  // Wrap in useEffect so that it just adds it as a listener
+  // once on mount
+  useEffect(() => {
+    // Define the function
+    const updateChatMessages = (message) => {
+      setMessages((prev) => [...prev, message]);
+    };
+    // Make it a listener whenever we receive a chat message
+    addListener("chat", updateChatMessages);
+
+    // Remove it as listener on unmount
+    return () => {
+      removeListener("chat", updateChatMessages);
+    };
+  }, [addListener, removeListener]);
 
   const handleSendMessage = () => {
-    if (message.trim() !== "") {
-      const chatMessage = {
-        type: "chat",
-        data: message,
-      };
-
-      ws.send(JSON.stringify(chatMessage));
-      setMessage("");
-
-    }
+    sendMessage("chat", messageToSend);
+    setMessageToSend("");
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type a message..."
-      />
-      <button onClick={handleSendMessage}>SEND</button>
+    <div className={styles.chatBox}>
+      <div className={styles.chatHistory}>
+        <h2>chat history</h2>
+        <ul className={styles.messagesList}>
+          {messages.map((msg, i) => (
+            <li key={i}>{msg.sender} : {msg.data}</li>
+          ))}
+        </ul>
+      </div>
+      <div className={styles.chatInput}>
+        <input
+          type="text"
+          value={messageToSend}
+          onChange={(e) => setMessageToSend(e.target.value)}
+          placeholder="Type a message..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSendMessage();
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

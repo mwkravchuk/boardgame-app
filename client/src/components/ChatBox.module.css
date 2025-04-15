@@ -1,0 +1,23 @@
+.chatBox {
+  display: flex;
+  flex-direction: column;
+  background-color: #c8c8c8;
+  border: solid black 1px;
+}
+
+.messagesList {
+  min-height: 200px;
+}
+
+.chatInput {
+  background-color: #9b9b9b;
+}
+
+.chatInput button {
+  border: none;
+}
+
+.chatInput input {
+  background: none;
+  color: white;
+}

@@ -42,8 +42,10 @@ func handleChatMessage(s *Server, conn *websocket.Conn, data interface{}) {
 	log.Println("sender: ", sender);
 	message := Message{
 		Type: "chat",
-		Sender: sender,
-		Data: data,
+		Data: map[string]interface{} {
+			"sender": sender,
+			"data": data,
+		},
 	}
 
 	// Convert the message data to JSON

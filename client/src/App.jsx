@@ -1,20 +1,19 @@
 import { useState } from "react";
 
 import Header from "./components/structure/Header";
-import ChatHistory from "./components/ChatHistory";
-import WebSocketComponent from "./components/websocket/WebSocketComponent";
+import ChatBox from "./components/ChatBox";
+import { WebSocketProvider } from "./contexts/WebSocketProvider";
 
 import './App.css'
 
 function App() {
 
-  const [chatHistory, setChatHistory] = useState([]);
-
   return (
     <div>
-      <Header />
-      <ChatHistory chatHistory={chatHistory} />
-      <WebSocketComponent setChatHistory={setChatHistory}/> {/* Handles websocket communication */}
+      <WebSocketProvider>
+        <Header />
+        <ChatBox />
+      </WebSocketProvider>
     </div>
   )
 }
