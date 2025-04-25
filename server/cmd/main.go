@@ -72,20 +72,19 @@ func handleChatMessage(s *Server, conn *websocket.Conn, data interface{}) {
 func handleRollDice(s *Server, conn *websocket.Conn, data interface{}) {
 	log.Println("Dice roll received")
 
+	sender := conn.RemoteAddr().String()
 	dice1 := rand.Intn(6) + 1
 	dice2 := rand.Intn(6) + 1
 
-	rollResult := map[string]int{
-		"dice1": dice1,
-		"dice2": dice2,
-	}
 
-	sender := conn.RemoteAddr().String()
 	log.Println("sender: ", sender);
 	message := Message{
 		Type: "roll_dice",
-		Sender: sender,
-		Data: rollResult,
+		Data: map[string]interface{} {
+			"sender": sender,
+			"dice1": dice1,
+			"dice2": dice2,
+		},
 	}
 
 	// Convert the message data to JSON
