@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import Header from "./components/structure/Header";
 import ChatBox from "./components/ChatBox";
 import { WebSocketProvider } from "./contexts/WebSocketProvider";
