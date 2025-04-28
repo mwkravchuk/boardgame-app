@@ -1,21 +1,24 @@
+import { BrowserRouter } from "react-router-dom";
+
 import Header from "./components/structure/Header";
-import ChatBox from "./components/ChatBox";
-import Board from "./components/Board";
-import { WebSocketProvider } from "./contexts/WebSocketProvider";
+import RenderRoutes from "./components/structure/RenderRoutes";
+import Footer from "./components/structure/Footer";
 
-import './App.css'
+import styles from "./App.module.css";
 
-function App() {
-
+const App = () => {
   return (
-    <div>
-      <WebSocketProvider>
-        <Header />
-        <ChatBox />
-        <Board />
-      </WebSocketProvider>
-    </div>
-  )
-}
+    <>
+      <BrowserRouter>
+        {/* Make header and whatever route take up whole page (100vh) */}
+        <div className={styles.page}>
+          <Header />
+          <RenderRoutes />
+        </div>
+        <Footer />
+      </BrowserRouter>
+    </>
+  );
+};
 
-export default App
+export default App;

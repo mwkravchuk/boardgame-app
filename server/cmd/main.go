@@ -34,18 +34,10 @@ var messageHandlers = map[string]func(*Server, *websocket.Conn, interface{}){
 	"game_state": handleGameState,
 }
 
-func handleChatMessage(s *Server, conn *websocket.Conn, data interface{}) {
-	// Process the chat message (e.g., broadcast it to all players in the room)
-	log.Println("Chat message received: ", data)
-
-	sender := conn.RemoteAddr().String()
-	log.Println("sender: ", sender);
+func (s *Server) broadcastMessage(msgType string, data map[string]interface{}) {
 	message := Message{
-		Type: "chat",
-		Data: map[string]interface{} {
-			"sender": sender,
-			"data": data,
-		},
+		Type: msgType,
+		Data: data,
 	}
 
 	// Convert the message data to JSON
@@ -67,46 +59,39 @@ func handleChatMessage(s *Server, conn *websocket.Conn, data interface{}) {
 			}
 		}(client, jsonData)
 	}
+}
+
+func handleChatMessage(s *Server, conn *websocket.Conn, data interface{}) {
+	log.Println("Chat message received: ", data)
+
+	// Take chat message from front end user and send it back to everyone.
+	sender := conn.RemoteAddr().String()
+	s.broadcastMessage("chat", map[string]interface{}{
+		"sender": sender,
+		"data": data,
+	})
 }
 
 func handleRollDice(s *Server, conn *websocket.Conn, data interface{}) {
 	log.Println("Dice roll received")
 
-	sender := conn.RemoteAddr().String()
 	dice1 := rand.Intn(6) + 1
 	dice2 := rand.Intn(6) + 1
 
+	// Send a message back with the dice roll information
+	s.broadcastMessage("roll_dice", map[string]interface{}{
+		"dice1": dice1,
+		"dice2": dice2,
+	})
 
-	log.Println("sender: ", sender);
-	message := Message{
-		Type: "roll_dice",
-		Data: map[string]interface{} {
-			"sender": sender,
-			"dice1": dice1,
-			"dice2": dice2,
-		},
-	}
-
-	// Convert the message data to JSON
-	jsonData, err := json.Marshal(message)
-	if err != nil {
-		log.Println("Error marshalling message:", err)
-		return
-	}
-
-	// Iterate over all clients and send the message to them
-	s.clientsMutex.Lock()
-	defer s.clientsMutex.Unlock()
-
-	for client := range s.clients {
-		go func(client *websocket.Conn, msg []byte) {
-			err := client.WriteMessage(websocket.TextMessage, msg)
-			if err != nil {
-				log.Println("Error sending message to client: ", err)
-			}
-		}(client, jsonData)
-	}
+	// Send a chat message about the results of the dice roll
+	sender := conn.RemoteAddr().String()
+	s.broadcastMessage("chat", map[string]interface{}{
+		"sender": sender,
+		"data": fmt.Sprintf("rolled: %d %d", dice1, dice2),
+	})
 }
+
 
 func handleGameState(s *Server, conn *websocket.Conn, data interface{}) {
 	// Process the game state message (e.g., update game state, validate move)
