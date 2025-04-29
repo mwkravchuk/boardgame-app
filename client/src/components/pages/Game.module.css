@@ -1,0 +1,12 @@
+.gameContainer {
+  display: flex;
+  height: 100%;
+}
+
+.leftCol {
+  flex: 1;
+}
+
+.rightCol {
+  width: 300px;
+}
