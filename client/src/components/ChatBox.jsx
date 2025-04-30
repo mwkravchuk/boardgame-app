@@ -14,7 +14,9 @@ const ChatBox = () => {
   // once on mount
   useEffect(() => {
     // Define the function
+    
     const updateChatMessages = (message) => {
+      console.log(message)
       setMessages((prev) => [...prev, message]);
     };
     // Make it a listener whenever we receive a chat message
@@ -39,6 +41,7 @@ const ChatBox = () => {
           {messages.map((msg, i) => (
             <li key={i}>{msg.sender} : {msg.data}</li>
           ))}
+          {console.log(messages)}
         </ul>
       </div>
       <div className={styles.chatInput}>
