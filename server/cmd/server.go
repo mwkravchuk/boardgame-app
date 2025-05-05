@@ -64,15 +64,11 @@ func (s *Server) readLoop(c *client) {
 }
 
 // broadcast the message back to the client
-func (s *Server) broadcast(msgType string, msg Message) {
+func (s *Server) broadcast(msg Message) {
 
-	message := Message{
-		Type: msgType,
-		Data: msg,
-	}
 
 	// Convert the message data to JSON
-	jsonData, err := json.Marshal(message)
+	jsonData, err := json.Marshal(msg)
 	if err != nil {
 		log.Println("Error marshalling message:", err)
 		return

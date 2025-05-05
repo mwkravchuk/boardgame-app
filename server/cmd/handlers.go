@@ -24,8 +24,8 @@ func dispatch(s *Server, c *client, msg Message) {
 
 // chat function 
 func chat(s *Server, sender *client, msg Message) {
-	s.broadcast(msg.Type, Message{
-		Type:   "chat",
+	s.broadcast(Message{
+		Type:   msg.Type,
 		Sender: sender.conn.RemoteAddr().String(),
 		Data:   msg.Data,
 	})
@@ -35,12 +35,7 @@ func chat(s *Server, sender *client, msg Message) {
 func roll(s *Server, sender *client, msg Message) {
 	d1, d2 := rand.Intn(6)+1, rand.Intn(6)+1
 
-	/*s.broadcast("roll_dice", Message{
-		Type: "roll_dice",
-		Data: map[string]int{"dice1": d1, "dice2": d2},
-	})*/
-
-	s.broadcast("chat", Message{
+	s.broadcast(Message{
 		Type:   "chat",
 		Sender: sender.conn.RemoteAddr().String(),
 		Data:   fmt.Sprintf("rolled %d & %d", d1, d2),

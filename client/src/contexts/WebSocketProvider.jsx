@@ -18,15 +18,18 @@ export const WebSocketProvider = ({ children }) => {
     ws.onmessage = (e) => {
       const msg = e.data;
       const parsedMsg = JSON.parse(msg);
-      const { type, data } = parsedMsg;
-      console.log("type: ", type);
-      console.log("data: ", data);
-
+      const { type, sender, data } = parsedMsg;
+      //console.log("type: ", type);
+      //console.log("sender: ", sender);
+      //console.log("data: ", data);
+    
       // For each function that has waited for this message
       // type to happen, call them.
 
+      const message = { sender, data };
+      
       const listeners = listenersRef.current[type] || [];
-      listeners.forEach((cb) => cb(data));
+      listeners.forEach((cb) => cb(message));
 
       // Say listenersRef = {game_state: [x, y, z]}
       // if the msg type is game_state,
