@@ -20,6 +20,7 @@ func main() {
 		hub.AddClient(conn)
 	})
 
+	log.Println("Websocket Server Running")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 

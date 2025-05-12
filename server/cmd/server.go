@@ -5,6 +5,7 @@ import (
 	"log"
 	"sync"
 	"github.com/gorilla/websocket"
+	"github.com/google/uuid"
 )
 
 // message sharing format
@@ -15,32 +16,44 @@ type Message struct {
 }
 
 // client struct for individual mutexes
-type client struct {
+type Client struct {
 	conn *websocket.Conn
+	id   string
 	mu   sync.Mutex
 }
 
 // server data structure 
 type Server struct {
-	clients      map[*client]bool
+	clients      map[*Client]bool
 	clientsMutex sync.RWMutex
 }
 
 func NewServer() *Server {
-	return &Server{clients: make(map[*client]bool)}
+	return &Server{clients: make(map[*Client]bool)}
 }
 
 // adding and removing clients
 func (s *Server) AddClient(ws *websocket.Conn) {
-	c := &client{conn: ws}
+	id := uuid.New().String()
+	c := &Client{
+		conn: ws,
+		id:   id,
+	}
+
+	// Server stores map of active clients
 	s.clientsMutex.Lock()
 	s.clients[c] = true
 	s.clientsMutex.Unlock()
 
+	msg := Message{
+		Type: "new_id",
+	}
+	dispatch(s, c, msg)
+
 	go s.readLoop(c)
 }
 
-func (s *Server) removeClient(c *client) {
+func (s *Server) removeClient(c *Client) {
 	s.clientsMutex.Lock()
 	if _, ok := s.clients[c]; ok {
 		delete(s.clients, c)
@@ -50,7 +63,7 @@ func (s *Server) removeClient(c *client) {
 }
 
 // read loop
-func (s *Server) readLoop(c *client) {
+func (s *Server) readLoop(c *Client) {
 	defer s.removeClient(c)
 
 	for {
