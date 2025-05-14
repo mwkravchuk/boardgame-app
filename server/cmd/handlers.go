@@ -9,6 +9,7 @@ import (
 type handlerFn func(*Server, *Client, Message)
 
 var registry = map[string]handlerFn{
+	"new_turn":  newTurn,
 	"new_id":    newId,
 	"chat":      chat,
 	"roll_dice": roll,
@@ -23,8 +24,22 @@ func dispatch(s *Server, c *Client, msg Message) {
 	}
 }
 
-func newId(s *Server, sender *Client, msg Message) {
+func newTurn(s *Server, sender *Client, msg Message) {
+
+	currentTurnId := s.turnOrder[s.currentTurn % len(s.turnOrder)]
+
 	s.broadcast(Message{
+		Type:   "new_turn",
+		Sender: sender.conn.RemoteAddr().String(),
+		Data:   currentTurnId,
+	})
+
+	s.currentTurn += 1
+
+}
+
+func newId(s *Server, sender *Client, msg Message) {
+	s.signal(sender, Message{
 		Type:   "new_id",
 		Sender: sender.conn.RemoteAddr().String(),
 		Data:   sender.id,

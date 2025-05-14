@@ -6,6 +6,7 @@ import (
 	"sync"
 	"github.com/gorilla/websocket"
 	"github.com/google/uuid"
+	"fmt"
 )
 
 // message sharing format
@@ -26,6 +27,8 @@ type Client struct {
 type Server struct {
 	clients      map[*Client]bool
 	clientsMutex sync.RWMutex
+	turnOrder    []string
+	currentTurn  int
 }
 
 func NewServer() *Server {
@@ -45,10 +48,24 @@ func (s *Server) AddClient(ws *websocket.Conn) {
 	s.clients[c] = true
 	s.clientsMutex.Unlock()
 
+	// Tell client their new id
 	msg := Message{
 		Type: "new_id",
 	}
 	dispatch(s, c, msg)
+
+	// Add client to the slice of players for this game
+	s.turnOrder = append(s.turnOrder, id)
+
+	// Start game when two players join and send message of new turn
+	if len(s.turnOrder) == 2 {
+		s.currentTurn = 0
+		msg = Message{
+			Type: "new_turn",
+		}
+		fmt.Println("game started")
+		dispatch(s, c, msg)
+	}
 
 	go s.readLoop(c)
 }
@@ -76,17 +93,35 @@ func (s *Server) readLoop(c *Client) {
 	}
 }
 
-// broadcast the message back to the client
-func (s *Server) broadcast(msg Message) {
-
-
+// signal message to just one client
+func (s *Server) signal(c *Client, msg Message) {
 	// Convert the message data to JSON
 	jsonData, err := json.Marshal(msg)
 	if err != nil {
 		log.Println("Error marshalling message:", err)
 		return
 	}
+	s.clientsMutex.RLock()
 
+	c.mu.Lock()
+	if err := c.conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
+		log.Println("write:", err)
+		c.mu.Unlock()
+		go s.removeClient(c)
+	}
+	c.mu.Unlock()
+	
+	s.clientsMutex.RUnlock()
+}
+
+// broadcast the message back to all the clients
+func (s *Server) broadcast(msg Message) {
+	// Convert the message data to JSON
+	jsonData, err := json.Marshal(msg)
+	if err != nil {
+		log.Println("Error marshalling message:", err)
+		return
+	}
 	s.clientsMutex.RLock()
 	for c := range s.clients {
 		c.mu.Lock()

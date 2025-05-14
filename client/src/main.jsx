@@ -7,11 +7,11 @@ import { WebSocketProvider } from "./contexts/WebSocketProvider.jsx";
 import { PlayerProvider } from "./contexts/PlayerProvider.jsx";
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode> JUST FOR DEVELOPMENT
     <WebSocketProvider>
       <PlayerProvider>
         <App />
       </PlayerProvider>
     </WebSocketProvider>
-  </StrictMode>
+  // </StrictMode>
 )
