@@ -34,6 +34,12 @@ func newTurn(s *Server, sender *Client, msg Message) {
 		Data:   currentTurnId,
 	})
 
+	// logic to reset "hasRolled" dice on client side
+	s.signal(sender, Message{
+		Type: "reset_roll_button",
+		Data: false,
+	})
+
 	s.currentTurn += 1
 
 }
@@ -59,6 +65,12 @@ func chat(s *Server, sender *Client, msg Message) {
 // dice roll function
 func roll(s *Server, sender *Client, msg Message) {
 	d1, d2 := rand.Intn(6) + 1, rand.Intn(6) + 1
+
+	// confirm to sender that dice has been rolled
+	s.signal(sender, Message{
+		Type: "roll_dice",
+		Data: true,
+	})
 
 	s.broadcast(Message{
 		Type:   "chat",
