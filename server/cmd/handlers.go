@@ -3,16 +3,18 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"time"
 )
 
 // handler function template
 type handlerFn func(*Server, *Client, Message)
 
 var registry = map[string]handlerFn{
-	"new_turn":  newTurn,
-	"new_id":    newId,
-	"chat":      chat,
-	"roll_dice": roll,
+	"create_room": createRoom,
+	"new_turn":    newTurn,
+	"new_id":      newId,
+	"chat":        chat,
+	"roll_dice":   roll,
 }
 
 // dispatcher --> sends message to corresponding function
@@ -22,6 +24,41 @@ func dispatch(s *Server, c *Client, msg Message) {
 	} else {
 		fmt.Println("unknown message:", msg.Type)
 	}
+}
+
+const letterBytes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const codeLength = 4
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+func generateRoomCode() string {
+	b := make([]byte, codeLength)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
+}
+
+func createRoom(s *Server, sender *Client, msg Message) {
+	// Create game room
+	code := generateRoomCode()
+	room := &GameRoom{
+		Code:        code,
+		Players:     make(map[*Client]bool),
+		TurnOrder:   []string{},
+		CurrentTurn: -1,
+	}
+
+	s.Rooms[code] = room
+
+	s.signal(sender, Message{
+		Type:   "room_created",
+		Sender: sender.conn.RemoteAddr().String(),
+		Data:   code,
+	})
+	// tell the sender it was created
 }
 
 func newTurn(s *Server, sender *Client, msg Message) {

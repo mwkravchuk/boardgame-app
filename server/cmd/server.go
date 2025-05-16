@@ -9,6 +9,13 @@ import (
 	"fmt"
 )
 
+type GameRoom struct {
+	Code        string
+	Players     map[*Client]bool
+	TurnOrder   []string
+	CurrentTurn int
+}
+
 // message sharing format
 type Message struct {
 	Type   string      `json:"type"`
@@ -27,12 +34,14 @@ type Client struct {
 type Server struct {
 	clients      map[*Client]bool
 	clientsMutex sync.RWMutex
+	Rooms        map[string]*GameRoom // Map from room code to room
 	turnOrder    []string
 	currentTurn  int
 }
 
 func NewServer() *Server {
-	return &Server{clients: make(map[*Client]bool)}
+	return &Server{clients: make(map[*Client]bool),
+								 Rooms: make(map[string]*GameRoom)}
 }
 
 // adding and removing clients
