@@ -1,15 +1,32 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
+
+import { useWebSocket } from "../../contexts/WebSocketProvider";
 
 const Lobby = () => {
 
   const location = useLocation();
+  const navigate = useNavigate();
+  const { sendMessage, addListener, removeListener } = useWebSocket();
+
   const roomCode = location.state.roomCode;
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const handleGameStarted = () => {
+      console.log("Game started. Go to game board mate");
+      navigate("/game");
+    };
+
+    addListener("game_started", handleGameStarted);
+
+    return () => {
+      removeListener("game_started", handleGameStarted);
+    };
+  }, [addListener, removeListener, navigate]);
 
   const handleStartGame = () => {
-    navigate("/game");
+    sendMessage("start_game", "");
   };
 
   return (

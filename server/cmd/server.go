@@ -37,11 +37,14 @@ type Server struct {
 	Rooms        map[string]*GameRoom // Map from room code to room
 	turnOrder    []string
 	currentTurn  int
+	ClientToRoomCode map[*Client]string
 }
 
 func NewServer() *Server {
 	return &Server{clients: make(map[*Client]bool),
-								 Rooms: make(map[string]*GameRoom)}
+								 Rooms: make(map[string]*GameRoom),
+								 ClientToRoomCode: make(map[*Client]string),
+								}
 }
 
 // adding and removing clients
@@ -133,6 +136,29 @@ func (s *Server) broadcast(msg Message) {
 	}
 	s.clientsMutex.RLock()
 	for c := range s.clients {
+		c.mu.Lock()
+		if err := c.conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
+			log.Println("write:", err)
+			c.mu.Unlock()
+			go s.removeClient(c)
+			continue
+		}
+		c.mu.Unlock()
+	}
+	s.clientsMutex.RUnlock()
+}
+
+
+func (s *Server) broadcastToRoom(room *GameRoom, msg Message) {
+		// Convert the message data to JSON
+	jsonData, err := json.Marshal(msg)
+	if err != nil {
+		log.Println("Error marshalling message:", err)
+		return
+	}
+
+	s.clientsMutex.RLock()
+	for c := range room.Players {
 		c.mu.Lock()
 		if err := c.conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
 			log.Println("write:", err)

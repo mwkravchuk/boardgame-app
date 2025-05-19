@@ -10,6 +10,8 @@ import (
 type handlerFn func(*Server, *Client, Message)
 
 var registry = map[string]handlerFn{
+	"start_game":  startGame,
+	"join_room":   joinRoom,
 	"create_room": createRoom,
 	"new_turn":    newTurn,
 	"new_id":      newId,
@@ -24,6 +26,39 @@ func dispatch(s *Server, c *Client, msg Message) {
 	} else {
 		fmt.Println("unknown message:", msg.Type)
 	}
+}
+
+func startGame(s *Server, sender *Client, msg Message) {
+
+	roomCode, ok := s.ClientToRoomCode[sender]
+	if !ok {
+		fmt.Println("Client not in a room")
+		return
+	}
+
+	room, ok := s.Rooms[roomCode]
+	if !ok {
+		fmt.Println("Room not found: ", roomCode)
+		return
+	}
+
+	// Need at least 2 players
+	if len(room.Players) < 2 {
+		fmt.Println("Not enough players to start")
+		return
+	}
+
+	// This is the "party leader" for now
+	if room.TurnOrder[0] != sender.id {
+		fmt.Println("Only room creator can start game")
+		return
+	}
+
+	// Tell everyone in the room that the game started
+	s.broadcastToRoom(room, Message{
+		Type:   "game_started",
+		Sender: sender.conn.RemoteAddr().String(),
+	})
 }
 
 const letterBytes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -51,14 +86,44 @@ func createRoom(s *Server, sender *Client, msg Message) {
 		CurrentTurn: -1,
 	}
 
+	// Add the sender to the room
+	room.Players[sender] = true
+	room.TurnOrder = append(room.TurnOrder, sender.id)
+	s.ClientToRoomCode[sender] = code
+
+	// Add the room to the server
 	s.Rooms[code] = room
 
+
+	// Sender joins the room after it was created. Let them know!
 	s.signal(sender, Message{
-		Type:   "room_created",
+		Type:   "room_joined",
 		Sender: sender.conn.RemoteAddr().String(),
 		Data:   code,
 	})
-	// tell the sender it was created
+}
+
+func joinRoom(s *Server, sender *Client, msg Message) {
+
+	fmt.Println("join_room message data: ", msg.Data)
+	code := msg.Data.(string)
+
+		if room, ok := s.Rooms[code]; ok {
+			// Room exists. Add them to it and let them know
+			room.Players[sender] = true
+			room.TurnOrder = append(room.TurnOrder, sender.id)
+			s.ClientToRoomCode[sender] = code
+
+			fmt.Println("client joined room: ", room)
+
+			s.signal(sender, Message{
+				Type:   "room_joined",
+				Sender: sender.conn.RemoteAddr().String(),
+				Data:   code,
+			})
+		} else {
+			// Room doesn't exist. Do nothing.
+		}
 }
 
 func newTurn(s *Server, sender *Client, msg Message) {
