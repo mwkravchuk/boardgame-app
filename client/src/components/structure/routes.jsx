@@ -1,7 +1,11 @@
+import Room from "../pages/Room";
+import Lobby from "../pages/Lobby";
 import Game from "../pages/Game";
 
 const routes = [
-  { path: "/", element: <Game /> },
+  { path: "/", element: <Room /> },
+  { path: "/lobby", element: <Lobby />},
+  { path: "/game", element: <Game />}
 ];
 
 export default routes;

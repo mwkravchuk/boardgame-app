@@ -6,8 +6,14 @@ import (
 	"sync"
 	"github.com/gorilla/websocket"
 	"github.com/google/uuid"
-	"fmt"
 )
+
+type GameRoom struct {
+	Code        string
+	Players     map[*Client]bool
+	TurnOrder   []string
+	CurrentTurn int
+}
 
 // message sharing format
 type Message struct {
@@ -27,12 +33,15 @@ type Client struct {
 type Server struct {
 	clients      map[*Client]bool
 	clientsMutex sync.RWMutex
-	turnOrder    []string
-	currentTurn  int
+	Rooms        map[string]*GameRoom // Map from room code to room
+	ClientToRoomCode map[*Client]string
 }
 
 func NewServer() *Server {
-	return &Server{clients: make(map[*Client]bool)}
+	return &Server{clients: make(map[*Client]bool),
+								 Rooms: make(map[string]*GameRoom),
+								 ClientToRoomCode: make(map[*Client]string),
+								}
 }
 
 // adding and removing clients
@@ -53,19 +62,6 @@ func (s *Server) AddClient(ws *websocket.Conn) {
 		Type: "new_id",
 	}
 	dispatch(s, c, msg)
-
-	// Add client to the slice of players for this game
-	s.turnOrder = append(s.turnOrder, id)
-
-	// Start game when two players join and send message of new turn
-	if len(s.turnOrder) == 2 {
-		s.currentTurn = 0
-		msg = Message{
-			Type: "new_turn",
-		}
-		fmt.Println("game started")
-		dispatch(s, c, msg)
-	}
 
 	go s.readLoop(c)
 }
@@ -124,6 +120,29 @@ func (s *Server) broadcast(msg Message) {
 	}
 	s.clientsMutex.RLock()
 	for c := range s.clients {
+		c.mu.Lock()
+		if err := c.conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
+			log.Println("write:", err)
+			c.mu.Unlock()
+			go s.removeClient(c)
+			continue
+		}
+		c.mu.Unlock()
+	}
+	s.clientsMutex.RUnlock()
+}
+
+
+func (s *Server) broadcastToRoom(room *GameRoom, msg Message) {
+		// Convert the message data to JSON
+	jsonData, err := json.Marshal(msg)
+	if err != nil {
+		log.Println("Error marshalling message:", err)
+		return
+	}
+
+	s.clientsMutex.RLock()
+	for c := range room.Players {
 		c.mu.Lock()
 		if err := c.conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
 			log.Println("write:", err)
