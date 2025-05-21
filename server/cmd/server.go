@@ -6,7 +6,6 @@ import (
 	"sync"
 	"github.com/gorilla/websocket"
 	"github.com/google/uuid"
-	"fmt"
 )
 
 type GameRoom struct {
@@ -35,8 +34,6 @@ type Server struct {
 	clients      map[*Client]bool
 	clientsMutex sync.RWMutex
 	Rooms        map[string]*GameRoom // Map from room code to room
-	turnOrder    []string
-	currentTurn  int
 	ClientToRoomCode map[*Client]string
 }
 
@@ -65,19 +62,6 @@ func (s *Server) AddClient(ws *websocket.Conn) {
 		Type: "new_id",
 	}
 	dispatch(s, c, msg)
-
-	// Add client to the slice of players for this game
-	s.turnOrder = append(s.turnOrder, id)
-
-	// Start game when two players join and send message of new turn
-	if len(s.turnOrder) == 2 {
-		s.currentTurn = 0
-		msg = Message{
-			Type: "new_turn",
-		}
-		fmt.Println("game started")
-		dispatch(s, c, msg)
-	}
 
 	go s.readLoop(c)
 }

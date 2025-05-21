@@ -4,6 +4,8 @@ import { useLocation } from "react-router-dom";
 
 import { useWebSocket } from "../../contexts/WebSocketProvider";
 
+import ChatBox from "../ChatBox";
+
 const Lobby = () => {
 
   const location = useLocation();
@@ -34,6 +36,7 @@ const Lobby = () => {
       <h2>GAME LOBBY</h2>
       <p>ROOM CODE IS: {roomCode}</p>
       <button onClick={handleStartGame}>START GAME</button>
+      <ChatBox />
     </div>
   );
 };
