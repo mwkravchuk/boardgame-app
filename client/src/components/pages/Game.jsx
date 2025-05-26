@@ -4,8 +4,6 @@ import Board from "../Board";
 import Controls from "../Controls";
 import ChatBox from "../ChatBox";
 
-import styles from "./Game.module.css";
-
 const Game = () => {
 
   const { playerId, currentTurnId } = usePlayer();
@@ -16,12 +14,12 @@ const Game = () => {
         <p>playerID:{playerId}</p>
         <p>currID:{currentTurnId}</p>
       </div>
-      <div className={styles.gameContainer}>
-        <div className={styles.leftCol}>
+      <div>
+        <div>
           <Board />
           <Controls />
         </div>
-        <div className={styles.rightCol}>
+        <div>
           <ChatBox />
         </div>
       </div>

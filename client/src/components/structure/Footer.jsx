@@ -1,9 +1,7 @@
-import styles from "./Footer.module.css";
-
 const Footer = () => {
   return (
-    <footer>
-      sup
+    <footer className="p-10 bg-blue-300">
+      Footer
     </footer>
   );
 };

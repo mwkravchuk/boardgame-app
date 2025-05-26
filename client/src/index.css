@@ -3,12 +3,6 @@
 
 /* Getting rid of most default styling */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: 'Open Sans';
 }
@@ -24,4 +18,9 @@ a:visited {
 
 ul {
   list-style: none;
+}
+
+/* Reused styling */
+.btn-primary {
+  @apply bg-blue-400 hover:bg-blue-500 px-4 py-1;
 }

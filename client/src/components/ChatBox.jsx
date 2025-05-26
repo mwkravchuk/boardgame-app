@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useWebSocket } from "../contexts/WebSocketProvider";
 
-import styles from "./ChatBox.module.css";
-
 const ChatBox = () => {
 
   const { sendMessage, addListener, removeListener } = useWebSocket();
@@ -33,16 +31,16 @@ const ChatBox = () => {
   };
 
   return (
-    <div className={styles.chatBox}>
-      <div className={styles.chatHistory}>
+    <div>
+      <div>
         <h2>chat history</h2>
-        <ul className={styles.messagesList}>
+        <ul>
           {messages.map((msg, i) => (
             <li key={i}>{msg.sender} : {msg.data}</li>
           ))}
         </ul>
       </div>
-      <div className={styles.chatInput}>
+      <div>
         <input
           type="text"
           value={messageToSend}

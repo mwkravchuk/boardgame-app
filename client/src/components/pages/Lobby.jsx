@@ -32,10 +32,12 @@ const Lobby = () => {
   };
 
   return (
-    <div>
-      <h2>GAME LOBBY</h2>
-      <p>ROOM CODE IS: {roomCode}</p>
-      <button onClick={handleStartGame}>START GAME</button>
+    <div className="flex flex-row justify-self-center gap-4">
+      <div className="flex flex-col gap-1">
+        <h2>GAME LOBBY</h2>
+        <p>ROOM CODE IS: {roomCode}</p>
+        <button className="btn-primary" onClick={handleStartGame}>START GAME</button>
+      </div>
       <ChatBox />
     </div>
   );

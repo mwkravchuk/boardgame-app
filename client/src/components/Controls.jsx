@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useWebSocket } from "../contexts/WebSocketProvider";
 import { usePlayer } from "../contexts/PlayerProvider";
 
-import styles from "./Controls.module.css";
-
 const Controls = () => {
     const { sendMessage, addListener, removeListener } = useWebSocket();
     const { isMyTurn } = usePlayer();
@@ -44,7 +42,7 @@ const Controls = () => {
     };
   
     return (
-      <div className={styles.controls}>
+      <div>
         <button disabled={!isMyTurn || hasRolled} onClick={handleRollDice}>ROLL DICE</button>
         <button disabled={!isMyTurn || !hasRolled} onClick={handleEndTurn}>END TURN</button>
       </div>
