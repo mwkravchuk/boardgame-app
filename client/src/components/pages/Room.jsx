@@ -34,12 +34,13 @@ const Room = () => {
   };
 
   return (
-    <div className="flex flex-col justify-self-center gap-4 bg-blue-300">
+    <div className="flex flex-col justify-self-center gap-4 bg-blue-300 h-full">
       <button className="btn-primary" onClick={handleCreateRoom}>Create Room</button>
 
       {/* Form to join a room */}
-      <form onSubmit={handleJoinRoom}>
+      <form className="bg-blue-400" onSubmit={handleJoinRoom}>
         <input
+          className="px-4"
           name="join"
           value={joinCode}
           onChange={(e) => setJoinCode(e.target.value)}

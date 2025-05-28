@@ -8,10 +8,14 @@ const App = () => {
   return (
     <>
       <BrowserRouter>
-        {/* Make header and whatever route take up whole page (100vh) */}
-        <div className="flex flex-col min-h-screen"> 
-          <Header />
-          <RenderRoutes />
+        <div className="flex flex-col">
+          {/* Make header and whatever route take up whole page (100vh) */}
+          <div className="flex flex-col min-h-screen bg-amber-200">
+            <Header />
+            <div className="flex-1">
+              <RenderRoutes />
+            </div>
+          </div> 
           <Footer />
         </div>
       </BrowserRouter>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useWebSocket } from "../contexts/WebSocketProvider";
 
 const ChatBox = () => {
@@ -25,22 +25,29 @@ const ChatBox = () => {
     };
   }, [addListener, removeListener]);
 
+  const messagesEndRef = useRef(null);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const handleSendMessage = () => {
     sendMessage("chat", messageToSend);
     setMessageToSend("");
   };
 
   return (
-    <div>
-      <div>
+    <div className="flex flex-col justify-between">
+      <div className="bg-green-200">
         <h2>chat history</h2>
-        <ul>
+        <ul className="overflow-y-auto max-h-64 pr-2" ref={messagesEndRef}>
           {messages.map((msg, i) => (
             <li key={i}>{msg.sender} : {msg.data}</li>
           ))}
         </ul>
       </div>
-      <div>
+      <div className="bg-green-400">
         <input
           type="text"
           value={messageToSend}
