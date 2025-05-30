@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "../../contexts/WebSocketProvider";
 
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+
 const Room = () => {
   const navigate = useNavigate();
   const { sendMessage, addListener, removeListener } = useWebSocket();
@@ -35,17 +38,20 @@ const Room = () => {
 
   return (
     <div className="flex flex-col justify-self-center gap-4 bg-blue-300 h-full">
-      <button className="btn-primary" onClick={handleCreateRoom}>Create Room</button>
-
+      <Button variant="outline" onClick={handleCreateRoom}>CREATE ROOM</Button>
       {/* Form to join a room */}
-      <form className="bg-blue-400" onSubmit={handleJoinRoom}>
-        <input
-          className="px-4"
+      <form className="flex gap-2" onSubmit={handleJoinRoom}>
+        <Input
           name="join"
           value={joinCode}
           onChange={(e) => setJoinCode(e.target.value)}
-          placeholder="Enter room code"/>
-        <button className="btn-primary" type="submit">Join Room</button>  
+          placeholder="Enter room code"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleJoinRoom();
+            }
+          }}/>
+        <Button variant="outline" type="submit">JOIN ROOM</Button>
       </form>
     </div>
   );

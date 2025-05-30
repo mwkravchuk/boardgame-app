@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useWebSocket } from "../contexts/WebSocketProvider";
 
+import { ScrollArea } from "../components/ui/scroll-area";
+import { Separator } from "../components/ui/separator";
+import { Input } from "../components/ui/input";
+
 const ChatBox = () => {
 
   const { sendMessage, addListener, removeListener } = useWebSocket();
@@ -38,6 +42,28 @@ const ChatBox = () => {
   };
 
   return (
+    <div>
+        <div>
+          <h4 className="font-bold text-center py-2">Chat History</h4>
+          <ul className="overflow-y-auto max-h-64 pr-2" ref={messagesEndRef}>
+            {messages.map((msg, i) => (
+              <li key={i}>{msg.sender} : {msg.data}</li>
+            ))}
+          </ul>
+        </div>
+      <Input type="text"
+              value={messageToSend}
+              onChange={(e) => setMessageToSend(e.target.value)}
+              placeholder="Type a message..."
+              onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSendMessage();
+              }
+            }}/>
+    </div>
+  );
+
+  /*return (
     <div className="flex flex-col justify-between">
       <div className="bg-green-200">
         <h2>chat history</h2>
@@ -62,6 +88,7 @@ const ChatBox = () => {
       </div>
     </div>
   );
+  */
 };
 
 export default ChatBox;
