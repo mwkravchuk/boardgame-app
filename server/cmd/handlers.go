@@ -16,6 +16,7 @@ var registry = map[string]handlerFn{
 	"new_turn":    newTurn,
 	"new_id":      newId,
 	"chat":        chat,
+	"console":     console,
 	"roll_dice":   roll,
 }
 
@@ -193,6 +194,26 @@ func chat(s *Server, sender *Client, msg Message) {
 	})
 }
 
+func console(s *Server, sender *Client, msg Message) {
+	roomCode, ok := s.ClientToRoomCode[sender]
+	if !ok {
+		fmt.Println("Client not in a room")
+		return
+	}
+
+	room, ok := s.Rooms[roomCode]
+	if !ok {
+		fmt.Println("Room not found: ", roomCode)
+		return
+	}
+
+	s.broadcastToRoom(room, Message{
+		Type:   "console",
+		Sender: sender.conn.RemoteAddr().String(),
+		Data:   msg.Data,
+	})
+}
+
 // dice roll function
 func roll(s *Server, sender *Client, msg Message) {
 	roomCode, ok := s.ClientToRoomCode[sender]
@@ -216,7 +237,7 @@ func roll(s *Server, sender *Client, msg Message) {
 	})
 
 	s.broadcastToRoom(room, Message{
-		Type:   "chat",
+		Type:   "console",
 		Sender: sender.conn.RemoteAddr().String(),
 		Data:   fmt.Sprintf("rolled %d & %d", d1, d2),
 	})

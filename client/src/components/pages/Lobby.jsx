@@ -32,9 +32,8 @@ const Lobby = () => {
   };
 
   return (
-    <div className="h-full flex flex-row justify-self-center gap-4">
-      <div className="flex flex-col gap-1">
-        <h2>GAME LOBBY</h2>
+    <div className="h-full flex flex-row justify-self-center gap-4 px-10 py-5 p-4 bg-amber-100 border-solid border-3 border-amber-300">
+      <div className="flex flex-col gap-1 justify-center">
         <p>ROOM CODE IS: {roomCode}</p>
         <button className="btn-primary" onClick={handleStartGame}>START GAME</button>
       </div>

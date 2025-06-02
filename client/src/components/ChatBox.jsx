@@ -45,7 +45,7 @@ const ChatBox = () => {
     <div>
         <div>
           <h4 className="font-bold text-center py-2">Chat History</h4>
-          <ul className="overflow-y-auto max-h-64 pr-2" ref={messagesEndRef}>
+          <ul className="overflow-auto h-64 w-64 pr-2" ref={messagesEndRef}>
             {messages.map((msg, i) => (
               <li key={i}>{msg.sender} : {msg.data}</li>
             ))}
@@ -62,33 +62,6 @@ const ChatBox = () => {
             }}/>
     </div>
   );
-
-  /*return (
-    <div className="flex flex-col justify-between">
-      <div className="bg-green-200">
-        <h2>chat history</h2>
-        <ul className="overflow-y-auto max-h-64 pr-2" ref={messagesEndRef}>
-          {messages.map((msg, i) => (
-            <li key={i}>{msg.sender} : {msg.data}</li>
-          ))}
-        </ul>
-      </div>
-      <div className="bg-green-400">
-        <input
-          type="text"
-          value={messageToSend}
-          onChange={(e) => setMessageToSend(e.target.value)}
-          placeholder="Type a message..."
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSendMessage();
-            }
-          }}
-        />
-      </div>
-    </div>
-  );
-  */
 };
 
 export default ChatBox;

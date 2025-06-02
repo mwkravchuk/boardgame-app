@@ -1,6 +1,6 @@
 import Room from "../pages/Room";
 import Lobby from "../pages/Lobby";
-import Game from "../pages/Game";
+import Game from "../pages/game/Game";
 
 const routes = [
   { path: "/", element: <Room /> },

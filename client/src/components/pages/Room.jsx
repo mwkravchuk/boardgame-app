@@ -37,8 +37,8 @@ const Room = () => {
   };
 
   return (
-    <div className="flex flex-col justify-self-center gap-4 bg-blue-300 h-full">
-      <Button variant="outline" onClick={handleCreateRoom}>CREATE ROOM</Button>
+    <div className="flex flex-col justify-self-center self-center gap-4 p-10 border-solid border-3 bg-amber-100 border-amber-300 h-full">
+      <Button className="py-5 px-8" variant="outline" onClick={handleCreateRoom}>CREATE ROOM</Button>
       {/* Form to join a room */}
       <form className="flex gap-2" onSubmit={handleJoinRoom}>
         <Input
@@ -51,7 +51,7 @@ const Room = () => {
               handleJoinRoom();
             }
           }}/>
-        <Button variant="outline" type="submit">JOIN ROOM</Button>
+        <Button className="py-5 px-8" variant="outline" type="submit">JOIN ROOM</Button>
       </form>
     </div>
   );

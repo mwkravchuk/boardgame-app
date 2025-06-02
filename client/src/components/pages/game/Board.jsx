@@ -1,8 +1,7 @@
 const Board = () => {
   return (
-    <div>
-      <h2>Board</h2>
-      <div></div>
+    <div className="w-165 h-165 bg-amber-50">
+      
     </div>
   );
 };

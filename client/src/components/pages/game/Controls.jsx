@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useWebSocket } from "../contexts/WebSocketProvider";
-import { usePlayer } from "../contexts/PlayerProvider";
+import { useWebSocket } from "../../../contexts/WebSocketProvider";
+import { usePlayer } from "../../../contexts/PlayerProvider";
 
 const Controls = () => {
     const { sendMessage, addListener, removeListener } = useWebSocket();
@@ -42,9 +42,9 @@ const Controls = () => {
     };
   
     return (
-      <div>
-        <button disabled={!isMyTurn || hasRolled} onClick={handleRollDice}>ROLL DICE</button>
-        <button disabled={!isMyTurn || !hasRolled} onClick={handleEndTurn}>END TURN</button>
+      <div className="flex flex-row gap-4 bg-amber-200">
+        <button className="btn-primary" disabled={!isMyTurn || hasRolled} onClick={handleRollDice}>ROLL DICE</button>
+        <button className="btn-primary" disabled={!isMyTurn || !hasRolled} onClick={handleEndTurn}>END TURN</button>
       </div>
     );
 };
