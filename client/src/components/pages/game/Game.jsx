@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 import Board from "./Board";
 import Controls from "./Controls";
 import ChatBox from "../../ChatBox";
@@ -6,8 +8,24 @@ import Console from "./Console";
 
 import { Separator } from "../../ui/separator";
 
+import { useWebSocket } from "../../../contexts/WebSocketProvider";
 
 const Game = () => {
+
+  const { addListener, removeListener } = useWebSocket();
+  const [gamestate, setGamestate] = useState(null);
+
+  useEffect(() => {
+    const updateGamestate = (message) => {
+      setGamestate(message);
+    };
+
+    addListener("gamestate", updateGamestate);
+
+    return () => {
+      removeListener("gamestate", updateGamestate);
+    };
+  }, [addListener, removeListener]);
 
   return (
     <div className="flex flex-col gap-4">
