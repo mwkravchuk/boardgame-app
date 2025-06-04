@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useWebSocket } from "../contexts/WebSocketProvider";
 
-import styles from "./ChatBox.module.css";
+import { ScrollArea } from "../components/ui/scroll-area";
+import { Separator } from "../components/ui/separator";
+import { Input } from "../components/ui/input";
 
 const ChatBox = () => {
 
@@ -27,34 +29,37 @@ const ChatBox = () => {
     };
   }, [addListener, removeListener]);
 
+  const messagesEndRef = useRef(null);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const handleSendMessage = () => {
     sendMessage("chat", messageToSend);
     setMessageToSend("");
   };
 
   return (
-    <div className={styles.chatBox}>
-      <div className={styles.chatHistory}>
-        <h2>chat history</h2>
-        <ul className={styles.messagesList}>
-          {messages.map((msg, i) => (
-            <li key={i}>{msg.sender} : {msg.data}</li>
-          ))}
-        </ul>
-      </div>
-      <div className={styles.chatInput}>
-        <input
-          type="text"
-          value={messageToSend}
-          onChange={(e) => setMessageToSend(e.target.value)}
-          placeholder="Type a message..."
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSendMessage();
-            }
-          }}
-        />
-      </div>
+    <div>
+        <div>
+          <h4 className="font-bold text-center py-2">Chat History</h4>
+          <ul className="overflow-auto h-64 w-64 pr-2" ref={messagesEndRef}>
+            {messages.map((msg, i) => (
+              <li key={i}>{msg.sender} : {msg.data}</li>
+            ))}
+          </ul>
+        </div>
+      <Input type="text"
+              value={messageToSend}
+              onChange={(e) => setMessageToSend(e.target.value)}
+              placeholder="Type a message..."
+              onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSendMessage();
+              }
+            }}/>
     </div>
   );
 };

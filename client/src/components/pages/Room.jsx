@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useWebSocket } from "../../contexts/WebSocketProvider";
-import styles from "./Room.module.css";
+
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 const Room = () => {
   const navigate = useNavigate();
@@ -35,17 +37,21 @@ const Room = () => {
   };
 
   return (
-    <div className={styles.roomContainer}>
-      <button onClick={handleCreateRoom}>Create Room</button>
-
+    <div className="flex flex-col justify-self-center self-center gap-4 p-10 border-solid border-3 bg-amber-100 border-amber-300 h-full">
+      <Button className="py-5 px-8" variant="outline" onClick={handleCreateRoom}>CREATE ROOM</Button>
       {/* Form to join a room */}
-      <form onSubmit={handleJoinRoom}>
-        <input
+      <form className="flex gap-2" onSubmit={handleJoinRoom}>
+        <Input
           name="join"
           value={joinCode}
           onChange={(e) => setJoinCode(e.target.value)}
-          placeholder="Enter room code"/>
-        <button type="submit">Join Room</button>  
+          placeholder="Enter room code"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleJoinRoom();
+            }
+          }}/>
+        <Button className="py-5 px-8" variant="outline" type="submit">JOIN ROOM</Button>
       </form>
     </div>
   );
