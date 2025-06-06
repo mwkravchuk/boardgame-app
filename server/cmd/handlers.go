@@ -50,7 +50,7 @@ func startGame(s *Server, sender *Client, msg Message) {
 	}
 
 	// This is the "party leader" for now
-	if room.TurnOrder[0] != sender.id {
+	if room.GameState.TurnOrder[0] != sender.id {
 		fmt.Println("Only room creator can start game")
 		return
 	}
@@ -83,16 +83,34 @@ func generateRoomCode() string {
 func createRoom(s *Server, sender *Client, msg Message) {
 	// Create game room
 	code := generateRoomCode()
-	room := &GameRoom{
-		Code:        code,
-		Players:     make(map[*Client]bool),
-		TurnOrder:   []string{},
-		CurrentTurn: 0,
+
+	// Initiate game/player state information
+	playerId := sender.id
+	initialPlayerState := &PlayerState{
+		ID:       playerId,
+		Position: 0,
+		Money:    1500,
+		InJail:   false,
 	}
 
-	// Add the sender to the room
+	initialGameState := &GameState{
+		Players: map[string]*PlayerState{
+			playerId: initialPlayerState,
+		},
+		TurnOrder: []string{playerId},
+		CurrentTurn: 0,
+		BoardState: make([]int, 40),
+	}
+
+	// Create room
+	room := &GameRoom{
+		Code:      code,
+		Players:   make(map[*Client]bool),
+		GameState: initialGameState,
+	}
+
+	// Consider sender as first player to this game. Add to appropriate maps
 	room.Players[sender] = true
-	room.TurnOrder = append(room.TurnOrder, sender.id)
 	s.ClientToRoomCode[sender] = code
 
 	// Add the room to the server's list of rooms
@@ -110,14 +128,28 @@ func joinRoom(s *Server, sender *Client, msg Message) {
 
 	fmt.Println("join_room message data: ", msg.Data)
 	code := msg.Data.(string)
+	playerId := sender.id
 
 	if room, ok := s.Rooms[code]; ok {
 		// Room exists. Add them to it and let them know
 		room.Players[sender] = true
-		room.TurnOrder = append(room.TurnOrder, sender.id)
+
+		// Initialize new player
+		newPlayer := &PlayerState{
+			ID:       playerId,
+			Position: 0,
+			Money:    1500,
+			InJail:   false,
+		}
+		room.GameState.Players[playerId] = newPlayer
+
+		// Add to appropriate maps
+		room.GameState.TurnOrder = append(room.GameState.TurnOrder, playerId)
 		s.ClientToRoomCode[sender] = code
 
 		fmt.Println("client joined room: ", room)
+		fmt.Println("gamestate turnorder: ", room.GameState.TurnOrder)
+		fmt.Println("gamestate players: ", room.GameState.Players)
 
 		s.signal(sender, Message{
 			Type:   "room_joined",
@@ -145,7 +177,7 @@ func newTurn(s *Server, sender *Client, msg Message) {
 	}
 
 	// Update the current turn for this room
-	currentTurnId := room.TurnOrder[room.CurrentTurn % len(room.TurnOrder)]
+	currentTurnId := room.GameState.TurnOrder[room.GameState.CurrentTurn % len(room.GameState.TurnOrder)]
 	fmt.Println("New turn message: ", currentTurnId)
 
 	// Tell players that current turn has updated
@@ -161,7 +193,7 @@ func newTurn(s *Server, sender *Client, msg Message) {
 		Data: false,
 	})
 
-	room.CurrentTurn += 1
+	room.GameState.CurrentTurn += 1
 }
 
 func newId(s *Server, sender *Client, msg Message) {
@@ -229,6 +261,9 @@ func roll(s *Server, sender *Client, msg Message) {
 	}
 
 	d1, d2 := rand.Intn(6) + 1, rand.Intn(6) + 1
+	totalDice := d1 + d2
+	playerId := sender.id
+	room.GameState.Players[playerId].Position += totalDice
 
 	// confirm to sender that dice has been rolled
 	s.signal(sender, Message{
@@ -240,5 +275,11 @@ func roll(s *Server, sender *Client, msg Message) {
 		Type:   "console",
 		Sender: sender.conn.RemoteAddr().String(),
 		Data:   fmt.Sprintf("rolled %d & %d", d1, d2),
+	})
+
+		s.broadcastToRoom(room, Message{
+		Type:   "game_state",
+		Sender: sender.conn.RemoteAddr().String(),
+		Data:   room.GameState,
 	})
 }

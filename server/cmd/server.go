@@ -8,11 +8,24 @@ import (
 	"github.com/google/uuid"
 )
 
+type GameState struct {
+	Players     map[string]*PlayerState `json:"players"`
+	TurnOrder   []string 								`json:"turnOrder"`
+	CurrentTurn int 										`json:"currentTurn"`
+	BoardState  []int 									`json:"boardState"`
+}
+
+type PlayerState struct {
+	ID       string `json:"id"`
+	Position int    `json:"position"`
+	Money    int    `json:"money"`
+	InJail   bool   `json:"inJail"`
+}
+
 type GameRoom struct {
-	Code        string
-	Players     map[*Client]bool
-	TurnOrder   []string
-	CurrentTurn int
+	Code      string
+	Players 	map[*Client]bool
+	GameState *GameState
 }
 
 // message sharing format
