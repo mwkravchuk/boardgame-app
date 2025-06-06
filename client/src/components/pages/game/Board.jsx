@@ -5,7 +5,7 @@ const players = [
   { id: "P2", position: 35, color: "bg-red-500"  },
 ];
 
-const Board = () => {
+const Board = ({ gamestate }) => {
 
   const numTotalTiles = BOARD_SIZE * 4 - 4;
   const tiles = Array.from({ length: numTotalTiles }, (_, i) => `Tile ${i + 1}`);

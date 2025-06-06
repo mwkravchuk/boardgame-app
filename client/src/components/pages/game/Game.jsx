@@ -31,7 +31,7 @@ const Game = () => {
     <div className="flex flex-col gap-4">
       <div className="flex gap-4 flex-row">
         <div className="bg-amber-100 border-solid border-3 border-amber-300 p-4">
-          <Board />
+          <Board gameState={gamestate}/>
           <Controls />
         </div>
         <div className="flex flex-col p-4 gap-4 w-80 bg-amber-100 border-solid border-3 border-amber-300">
