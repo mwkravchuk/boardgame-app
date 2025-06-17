@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
 
 import { useWebSocket } from "../../contexts/WebSocketProvider";
 
 import ChatBox from "../ChatBox";
+import ColorSelector from "../ColorSelector";
 
 const Lobby = () => {
 
@@ -14,9 +15,15 @@ const Lobby = () => {
 
   const roomCode = location.state.roomCode;
 
+  const [selectedColor, setSelectedColor] = useState(null);
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+  };
+
   useEffect(() => {
     const handleGameStarted = () => {
       console.log("Game started. Go to game board mate");
+      sendMessage("color_selected", selectedColor);
       navigate("/game");
     };
 
@@ -25,7 +32,7 @@ const Lobby = () => {
     return () => {
       removeListener("game_started", handleGameStarted);
     };
-  }, [addListener, removeListener, navigate]);
+  }, [addListener, removeListener, sendMessage, selectedColor, navigate]);
 
   const handleStartGame = () => {
     sendMessage("start_game", "");
@@ -36,6 +43,7 @@ const Lobby = () => {
       <div className="flex flex-col gap-1 justify-center">
         <p>ROOM CODE IS: {roomCode}</p>
         <button className="btn-primary" onClick={handleStartGame}>START GAME</button>
+        <ColorSelector selectedColor={selectedColor} onSelect={handleColorSelect}/>
       </div>
       <ChatBox />
     </div>

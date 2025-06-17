@@ -6,16 +6,11 @@ const Controls = () => {
     const { sendMessage, addListener, removeListener } = useWebSocket();
     const { isMyTurn } = usePlayer();
   
-    //const [dice1, setDice1] = useState(0);
-    //const [dice2, setDice2] = useState(0);
     const [hasRolled, setHasRolled] = useState(false);
 
     useEffect(() => {
       const updateBoardFromRoll = (message) => {
-          //console.log("Roll dice callback:", message)
-          //setDice1(message.dice1);
-          //setDice2(message.dice2);
-          setHasRolled(message.data)
+        setHasRolled(message.data)
       };
   
       const resetRollButton = (message) => {

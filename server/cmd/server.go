@@ -20,6 +20,7 @@ type PlayerState struct {
 	Position int    `json:"position"`
 	Money    int    `json:"money"`
 	InJail   bool   `json:"inJail"`
+	Color    string `json:"color"`
 }
 
 type GameRoom struct {

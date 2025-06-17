@@ -17,13 +17,14 @@ const Game = () => {
 
   useEffect(() => {
     const updateGamestate = (message) => {
-      setGamestate(message);
+      console.log("game_state msg data:", message.data);
+      setGamestate(message.data);
     };
 
-    addListener("gamestate", updateGamestate);
+    addListener("game_state", updateGamestate);
 
     return () => {
-      removeListener("gamestate", updateGamestate);
+      removeListener("game_state", updateGamestate);
     };
   }, [addListener, removeListener]);
 
@@ -32,7 +33,7 @@ const Game = () => {
       <div className="flex gap-4 flex-row">
         <div className="bg-amber-100 border-solid border-3 border-amber-300 p-4">
           <Board gameState={gamestate}/>
-          <Controls />
+          <Controls gameState={gamestate}/>
         </div>
         <div className="flex flex-col p-4 gap-4 w-80 bg-amber-100 border-solid border-3 border-amber-300">
           <Console />

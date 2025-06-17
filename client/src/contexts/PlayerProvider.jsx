@@ -19,7 +19,7 @@ export const PlayerProvider = ({ children }) => {
     };
 
     const updateCurrentTurnId = (message) => {
-      console.log("newturn msg:", message);
+      console.log("game msg:", message);
       setCurrentTurnId(message.data);
     };
 
