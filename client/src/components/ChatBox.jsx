@@ -44,7 +44,6 @@ const ChatBox = () => {
   return (
     <div>
         <div>
-          <h4 className="font-bold text-center py-2">Chat History</h4>
           <ul className="overflow-auto h-64 w-64 pr-2" ref={messagesEndRef}>
             {messages.map((msg, i) => (
               <li key={i}>{msg.sender} : {msg.data}</li>

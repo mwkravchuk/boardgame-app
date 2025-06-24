@@ -107,7 +107,7 @@ func initializeProperties() []Property {
 	properties := make([]Property, 40)
 	properties[1] = Property{
 		Name: "Mediterranean Avenue",
-		Group: "brown",
+		Color: "brown",
 		Price: 60,
 		Rent: 2,
 		OwnerID: "",
@@ -116,7 +116,7 @@ func initializeProperties() []Property {
 	}
 	properties[3] = Property{
 		Name: "Baltic Avenue",
-		Group: "brown",
+		Color: "brown",
 		Price: 60,
 		Rent: 4,
 		OwnerID: "",
@@ -125,7 +125,7 @@ func initializeProperties() []Property {
 	}
 	properties[5] = Property{
 		Name: "Reading Railroad",
-		Group: "rr",
+		Color: "black",
 		Price: 200,
 		Rent: 25,
 		OwnerID: "",
@@ -134,7 +134,7 @@ func initializeProperties() []Property {
 	}
 	properties[6] = Property{
 		Name: "Oriental Avenue",
-		Group: "light blue",
+		Color: "light blue",
 		Price: 100,
 		Rent: 6,
 		OwnerID: "",
@@ -143,7 +143,7 @@ func initializeProperties() []Property {
 	}
 	properties[8] = Property{
 		Name: "Vermont Avenue",
-		Group: "light blue",
+		Color: "light blue",
 		Price: 100,
 		Rent: 6,
 		OwnerID: "",
@@ -152,7 +152,7 @@ func initializeProperties() []Property {
 	}
 	properties[9] = Property{
 		Name: "Connecticut Avenue",
-		Group: "light blue",
+		Color: "light blue",
 		Price: 120,
 		Rent: 8,
 		OwnerID: "",
@@ -161,7 +161,7 @@ func initializeProperties() []Property {
 	}
 	properties[11] = Property{
 		Name: "St. Charles Place",
-		Group: "pink",
+		Color: "pink",
 		Price: 140,
 		Rent: 10,
 		OwnerID: "",
@@ -170,7 +170,7 @@ func initializeProperties() []Property {
 	}
 	properties[12] = Property{
 		Name: "Electric Company",
-		Group: "utility",
+		Color: "white",
 		Price: 150,
 		Rent: 0,
 		OwnerID: "",
@@ -179,7 +179,7 @@ func initializeProperties() []Property {
 	}
 	properties[13] = Property{
 		Name: "States Avenue",
-		Group: "pink",
+		Color: "pink",
 		Price: 140,
 		Rent: 10,
 		OwnerID: "",
@@ -188,7 +188,7 @@ func initializeProperties() []Property {
 	}
 	properties[14] = Property{
 		Name: "Virginia Avenue",
-		Group: "pink",
+		Color: "pink",
 		Price: 160,
 		Rent: 12,
 		OwnerID: "",
@@ -197,7 +197,7 @@ func initializeProperties() []Property {
 	}
 	properties[15] = Property{
 		Name: "Pennsylvania Railroad",
-		Group: "rr",
+		Color: "black",
 		Price: 200,
 		Rent: 25,
 		OwnerID: "",
@@ -206,7 +206,7 @@ func initializeProperties() []Property {
 	}
 	properties[16] = Property{
 		Name: "St. James Place",
-		Group: "orange",
+		Color: "orange",
 		Price: 180,
 		Rent: 14,
 		OwnerID: "",
@@ -215,7 +215,7 @@ func initializeProperties() []Property {
 	}
 	properties[18] = Property{
 		Name: "Tennessee Avenue",
-		Group: "orange",
+		Color: "orange",
 		Price: 180,
 		Rent: 14,
 		OwnerID: "",
@@ -224,7 +224,7 @@ func initializeProperties() []Property {
 	}
 	properties[19] = Property{
 		Name: "New York Avenue",
-		Group: "orange",
+		Color: "orange",
 		Price: 200,
 		Rent: 16,
 		OwnerID: "",
@@ -233,7 +233,7 @@ func initializeProperties() []Property {
 	}
 	properties[21] = Property{
 		Name: "Kentucky Avenue",
-		Group: "red",
+		Color: "red",
 		Price: 220,
 		Rent: 18,
 		OwnerID: "",
@@ -242,7 +242,7 @@ func initializeProperties() []Property {
 	}
 	properties[23] = Property{
 		Name: "Indiana Avenue",
-		Group: "red",
+		Color: "red",
 		Price: 220,
 		Rent: 18,
 		OwnerID: "",
@@ -251,7 +251,7 @@ func initializeProperties() []Property {
 	}
 	properties[24] = Property{
 		Name: "Illinois Avenue",
-		Group: "red",
+		Color: "red",
 		Price: 240,
 		Rent: 20,
 		OwnerID: "",
@@ -260,7 +260,7 @@ func initializeProperties() []Property {
 	}
 	properties[25] = Property{
 		Name: "B & O Railroad",
-		Group: "rr",
+		Color: "black",
 		Price: 200,
 		Rent: 25,
 		OwnerID: "",
@@ -269,7 +269,7 @@ func initializeProperties() []Property {
 	}
 	properties[26] = Property{
 		Name: "Atlantic Avenue",
-		Group: "yellow",
+		Color: "yellow",
 		Price: 260,
 		Rent: 22,
 		OwnerID: "",
@@ -278,7 +278,7 @@ func initializeProperties() []Property {
 	}
 	properties[27] = Property{
 		Name: "Ventnor Avenue",
-		Group: "yellow",
+		Color: "yellow",
 		Price: 260,
 		Rent: 22,
 		OwnerID: "",
@@ -287,7 +287,7 @@ func initializeProperties() []Property {
 	}
 	properties[28] = Property{
 		Name: "Water Works",
-		Group: "utility",
+		Color: "white",
 		Price: 150,
 		Rent: 0,
 		OwnerID: "",
@@ -296,7 +296,7 @@ func initializeProperties() []Property {
 	}
 	properties[29] = Property{
 		Name: "Marvin Gardens",
-		Group: "yellow",
+		Color: "yellow",
 		Price: 280,
 		Rent: 24,
 		OwnerID: "",
@@ -305,7 +305,7 @@ func initializeProperties() []Property {
 	}
 	properties[31] = Property{
 		Name: "Pacific Avenue",
-		Group: "green",
+		Color: "green",
 		Price: 300,
 		Rent: 26,
 		OwnerID: "",
@@ -314,7 +314,7 @@ func initializeProperties() []Property {
 	}
 	properties[32] = Property{
 		Name: "North Carolina Avenue",
-		Group: "green",
+		Color: "green",
 		Price: 300,
 		Rent: 26,
 		OwnerID: "",
@@ -323,7 +323,7 @@ func initializeProperties() []Property {
 	}
 	properties[34] = Property{
 		Name: "Pennsylvania Avenue",
-		Group: "green",
+		Color: "green",
 		Price: 320,
 		Rent: 28,
 		OwnerID: "",
@@ -332,7 +332,7 @@ func initializeProperties() []Property {
 	}
 	properties[35] = Property{
 		Name: "Short Line",
-		Group: "rr",
+		Color: "black",
 		Price: 200,
 		Rent: 25,
 		OwnerID: "",
@@ -341,7 +341,7 @@ func initializeProperties() []Property {
 	}
 	properties[37] = Property{
 		Name: "Park Place",
-		Group: "blue",
+		Color: "blue",
 		Price: 350,
 		Rent: 35,
 		OwnerID: "",
@@ -350,7 +350,7 @@ func initializeProperties() []Property {
 	}
 	properties[39] = Property{
 		Name: "Boardwalk",
-		Group: "blue",
+		Color: "blue",
 		Price: 400,
 		Rent: 50,
 		OwnerID: "",

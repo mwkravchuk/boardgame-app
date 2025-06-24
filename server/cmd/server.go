@@ -22,7 +22,7 @@ type Property struct {
 	Rent        int		 `json:"rent"`
 	OwnerID     string `json:"ownerId"`
 	IsOwned     bool   `json:"isOwned"`
-	Group       string `json:"group"`
+	Color       string `json:"color"`
 	IsMortgaged bool   `json:"isMortgaged"`
 }
 

@@ -31,7 +31,6 @@ const Console = () => {
 
   return (
     <div>
-      <h4 className="font-bold text-center py-2">Console</h4>
       <ul className="overflow-auto h-32 w-64 pr-2" ref={messagesEndRef}>
         {messages.map((msg, i) => (
           <li key={i}>{msg.sender} {msg.data}</li>

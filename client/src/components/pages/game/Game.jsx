@@ -40,7 +40,7 @@ const Game = () => {
           <Separator className="bg-amber-300"/>
           <ChatBox />
           <Separator className="bg-amber-300"/>
-          <PlayerInfo />
+          <PlayerInfo gameState={gamestate} />
         </div>
       </div>
     </div>
