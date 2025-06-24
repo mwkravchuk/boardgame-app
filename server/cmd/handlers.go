@@ -78,12 +78,7 @@ func startGame(s *Server, sender *Client, msg Message) {
 		})
 		
 		// Send a new_turn message to the party owner to start game.
-		currentTurnId := room.GameState.TurnOrder[room.GameState.CurrentTurn % len(room.GameState.TurnOrder)]
-		s.broadcastToRoom(room, Message{
-			Type:   "new_turn",
-			Sender: sender.conn.RemoteAddr().String(),
-			Data:   currentTurnId,
-		})
+		newTurn(s, sender, msg)
 
 		s.broadcastToRoom(room, Message{
 			Type:   "game_state",
@@ -108,6 +103,264 @@ func generateRoomCode() string {
 	return string(b)
 }
 
+func initializeProperties() []Property {
+	properties := make([]Property, 40)
+	properties[1] = Property{
+		Name: "Mediterranean Avenue",
+		Group: "brown",
+		Price: 60,
+		Rent: 2,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[3] = Property{
+		Name: "Baltic Avenue",
+		Group: "brown",
+		Price: 60,
+		Rent: 4,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[5] = Property{
+		Name: "Reading Railroad",
+		Group: "rr",
+		Price: 200,
+		Rent: 25,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[6] = Property{
+		Name: "Oriental Avenue",
+		Group: "light blue",
+		Price: 100,
+		Rent: 6,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[8] = Property{
+		Name: "Vermont Avenue",
+		Group: "light blue",
+		Price: 100,
+		Rent: 6,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[9] = Property{
+		Name: "Connecticut Avenue",
+		Group: "light blue",
+		Price: 120,
+		Rent: 8,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[11] = Property{
+		Name: "St. Charles Place",
+		Group: "pink",
+		Price: 140,
+		Rent: 10,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[12] = Property{
+		Name: "Electric Company",
+		Group: "utility",
+		Price: 150,
+		Rent: 0,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[13] = Property{
+		Name: "States Avenue",
+		Group: "pink",
+		Price: 140,
+		Rent: 10,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[14] = Property{
+		Name: "Virginia Avenue",
+		Group: "pink",
+		Price: 160,
+		Rent: 12,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[15] = Property{
+		Name: "Pennsylvania Railroad",
+		Group: "rr",
+		Price: 200,
+		Rent: 25,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[16] = Property{
+		Name: "St. James Place",
+		Group: "orange",
+		Price: 180,
+		Rent: 14,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[18] = Property{
+		Name: "Tennessee Avenue",
+		Group: "orange",
+		Price: 180,
+		Rent: 14,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[19] = Property{
+		Name: "New York Avenue",
+		Group: "orange",
+		Price: 200,
+		Rent: 16,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[21] = Property{
+		Name: "Kentucky Avenue",
+		Group: "red",
+		Price: 220,
+		Rent: 18,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[23] = Property{
+		Name: "Indiana Avenue",
+		Group: "red",
+		Price: 220,
+		Rent: 18,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[24] = Property{
+		Name: "Illinois Avenue",
+		Group: "red",
+		Price: 240,
+		Rent: 20,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[25] = Property{
+		Name: "B & O Railroad",
+		Group: "rr",
+		Price: 200,
+		Rent: 25,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[26] = Property{
+		Name: "Atlantic Avenue",
+		Group: "yellow",
+		Price: 260,
+		Rent: 22,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[27] = Property{
+		Name: "Ventnor Avenue",
+		Group: "yellow",
+		Price: 260,
+		Rent: 22,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[28] = Property{
+		Name: "Water Works",
+		Group: "utility",
+		Price: 150,
+		Rent: 0,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[29] = Property{
+		Name: "Marvin Gardens",
+		Group: "yellow",
+		Price: 280,
+		Rent: 24,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[31] = Property{
+		Name: "Pacific Avenue",
+		Group: "green",
+		Price: 300,
+		Rent: 26,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[32] = Property{
+		Name: "North Carolina Avenue",
+		Group: "green",
+		Price: 300,
+		Rent: 26,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[34] = Property{
+		Name: "Pennsylvania Avenue",
+		Group: "green",
+		Price: 320,
+		Rent: 28,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[35] = Property{
+		Name: "Short Line",
+		Group: "rr",
+		Price: 200,
+		Rent: 25,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[37] = Property{
+		Name: "Park Place",
+		Group: "blue",
+		Price: 350,
+		Rent: 35,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+	properties[39] = Property{
+		Name: "Boardwalk",
+		Group: "blue",
+		Price: 400,
+		Rent: 50,
+		OwnerID: "",
+		IsOwned: false,
+		IsMortgaged: false,
+	}
+
+	return properties
+}
+
 func createRoom(s *Server, sender *Client, msg Message) {
 	// Create game room
 	code := generateRoomCode()
@@ -128,6 +381,7 @@ func createRoom(s *Server, sender *Client, msg Message) {
 		TurnOrder: []string{playerId},
 		CurrentTurn: 0,
 		BoardState: make([]int, 40),
+		Properties: initializeProperties(),
 	}
 
 	// Create room

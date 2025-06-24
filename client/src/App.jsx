@@ -11,7 +11,6 @@ const App = () => {
         <div className="flex flex-col">
           {/* Make header and whatever route take up whole page (100vh) */}
           <div className="flex flex-col min-h-screen bg-amber-200">
-            <Header />
             <div className="flex flex-1 justify-center items-center">
               <RenderRoutes />
             </div>

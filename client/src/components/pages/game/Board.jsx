@@ -26,17 +26,25 @@ const Board = ({ gameState }) => {
   };
 
   return (
-    <div className="grid grid-cols-11 grid-rows-11 w-[660px] h-[660px] bg-amber-50 relative">
+    <div className="grid grid-cols-11 grid-rows-11 w-[770px] h-[770px] bg-amber-50 relative">
       {tiles.map((tile, index) => {
         const { row, col } = getTilePosition(index);
         const playerOnTile = gameState?.players ? Object.values(gameState.players).filter(p => p.position === index) : [];
+        const property = gameState?.properties?.[index];
         return (
           <div key={index}
-               className="absolute w-[60px] h-[60px] border border-amber-600 flex items-center justify-center text-sm"
+               className="absolute w-[70px] h-[70px] border border-amber-600 flex items-center justify-center text-sm flex-col text-center"
                style={{
-                top: `${row * 60}px`,
-                left: `${col * 60}px`,
+                top: `${row * 70}px`,
+                left: `${col * 70}px`,
                }}>
+            {/* Property Name */}
+            {property?.name && (<div className="text-[10px] font-bold w-full">{property.name}</div>)}
+
+            {/* Property Price */}
+            {property?.price && (<div className="text-xs">{property.price}</div>)}
+
+            {/* Players on tile */}
             {playerOnTile.map((player) => (
               <div
                 key={player.id}

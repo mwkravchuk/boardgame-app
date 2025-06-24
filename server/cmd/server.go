@@ -13,6 +13,17 @@ type GameState struct {
 	TurnOrder   []string 								`json:"turnOrder"`
 	CurrentTurn int 										`json:"currentTurn"`
 	BoardState  []int 									`json:"boardState"`
+	Properties  []Property							`json:"properties"`
+}
+
+type Property struct {
+	Name 				string `json:"name"`
+	Price 	    int    `json:"price"`
+	Rent        int		 `json:"rent"`
+	OwnerID     string `json:"ownerId"`
+	IsOwned     bool   `json:"isOwned"`
+	Group       string `json:"group"`
+	IsMortgaged bool   `json:"isMortgaged"`
 }
 
 type PlayerState struct {
