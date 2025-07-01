@@ -12,7 +12,7 @@ const PlayerInfo = ({ gameState }) => {
             className="flex flex-col"
           >
             <div className="flex">
-              <span>{player.id}</span>
+              <span>{player.displayName}</span>
               <span>{player.color}</span>
             </div>
             <div>

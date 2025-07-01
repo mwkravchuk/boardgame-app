@@ -10,6 +10,7 @@ const Room = () => {
   const { sendMessage, addListener, removeListener } = useWebSocket();
 
   const [joinCode, setJoinCode] = useState("");
+  const [displayName, setDisplayName] = useState("");
 
   useEffect(() => {
 
@@ -26,18 +27,24 @@ const Room = () => {
   }, [addListener, removeListener, navigate]);
 
   const handleCreateRoom = () => {
-    sendMessage("create_room", "");
+    sendMessage("create_room", { displayName });
   };
 
   const handleJoinRoom = (e) => {
     e.preventDefault();
     if (joinCode.trim()) {
-      sendMessage("join_room", joinCode.trim());
+      sendMessage("join_room", { code: joinCode.trim(), displayName });
     }
   };
 
   return (
     <div className="flex flex-col justify-self-center self-center gap-4 p-10 border-solid border-3 bg-amber-100 border-amber-300 h-full">
+      <Input
+        name="displayName"
+        value={displayName}
+        onChange={(e) => setDisplayName(e.target.value)}
+        placeholder="Enter display name"
+      />
       <Button className="py-5 px-8" variant="outline" onClick={handleCreateRoom}>CREATE ROOM</Button>
       {/* Form to join a room */}
       <form className="flex gap-2" onSubmit={handleJoinRoom}>

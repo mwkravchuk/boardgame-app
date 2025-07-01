@@ -10,15 +10,35 @@ import (
 type handlerFn func(*Server, *Client, Message)
 
 var registry = map[string]handlerFn{
-	"start_game":     startGame,
-	"join_room":      joinRoom,
-	"create_room":    createRoom,
-	"new_turn":       newTurn,
-	"new_id":         newId,
-	"chat":           chat,
-	"console":        console,
-	"roll_dice":      roll,
-	"color_selected": colorSelected,
+	"start_game":       startGame,
+	"join_room":        joinRoom,
+	"create_room":      createRoom,
+	"new_turn":         newTurn,
+	"new_id":           newId,
+	"chat":             chat,
+	"console":          console,
+	"roll_dice":        roll,
+	"color_selected":   colorSelected,
+	"buy_property":     buyProperty,
+	"auction_property": auctionProperty,
+}
+
+func buyProperty(s *Server, sender *Client, msg Message) {
+	fmt.Println("buy property data: ", msg.Data)
+	room, ok := isInValidRoom(s, sender)
+	if ok {
+		playerId := sender.id
+		currPosition := room.GameState.Players[playerId].Position
+
+		// update property
+		room.GameState.Properties[currPosition].IsOwned = true
+		room.GameState.Properties[currPosition].OwnerID = playerId
+		room.GameState.Players[playerId].Money -= room.GameState.Properties[currPosition].Price
+	}
+}
+
+func auctionProperty(s *Server, sender *Client, msg Message) {
+	fmt.Println("auction property data: ", msg.Data)
 }
 
 func colorSelected(s *Server, sender *Client, msg Message) {
@@ -111,6 +131,7 @@ func initializeProperties() []Property {
 		Price: 60,
 		Rent: 2,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -120,6 +141,7 @@ func initializeProperties() []Property {
 		Price: 60,
 		Rent: 4,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -129,6 +151,7 @@ func initializeProperties() []Property {
 		Price: 200,
 		Rent: 25,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -138,6 +161,7 @@ func initializeProperties() []Property {
 		Price: 100,
 		Rent: 6,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -147,6 +171,7 @@ func initializeProperties() []Property {
 		Price: 100,
 		Rent: 6,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -156,6 +181,7 @@ func initializeProperties() []Property {
 		Price: 120,
 		Rent: 8,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -165,6 +191,7 @@ func initializeProperties() []Property {
 		Price: 140,
 		Rent: 10,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -174,6 +201,7 @@ func initializeProperties() []Property {
 		Price: 150,
 		Rent: 0,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -183,6 +211,7 @@ func initializeProperties() []Property {
 		Price: 140,
 		Rent: 10,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -192,6 +221,7 @@ func initializeProperties() []Property {
 		Price: 160,
 		Rent: 12,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -201,6 +231,7 @@ func initializeProperties() []Property {
 		Price: 200,
 		Rent: 25,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -210,6 +241,7 @@ func initializeProperties() []Property {
 		Price: 180,
 		Rent: 14,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -219,6 +251,7 @@ func initializeProperties() []Property {
 		Price: 180,
 		Rent: 14,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -228,6 +261,7 @@ func initializeProperties() []Property {
 		Price: 200,
 		Rent: 16,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -237,6 +271,7 @@ func initializeProperties() []Property {
 		Price: 220,
 		Rent: 18,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -246,6 +281,7 @@ func initializeProperties() []Property {
 		Price: 220,
 		Rent: 18,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -255,6 +291,7 @@ func initializeProperties() []Property {
 		Price: 240,
 		Rent: 20,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -264,6 +301,7 @@ func initializeProperties() []Property {
 		Price: 200,
 		Rent: 25,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -273,6 +311,7 @@ func initializeProperties() []Property {
 		Price: 260,
 		Rent: 22,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -282,6 +321,7 @@ func initializeProperties() []Property {
 		Price: 260,
 		Rent: 22,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -291,6 +331,7 @@ func initializeProperties() []Property {
 		Price: 150,
 		Rent: 0,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -300,6 +341,7 @@ func initializeProperties() []Property {
 		Price: 280,
 		Rent: 24,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -309,6 +351,7 @@ func initializeProperties() []Property {
 		Price: 300,
 		Rent: 26,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -318,6 +361,7 @@ func initializeProperties() []Property {
 		Price: 300,
 		Rent: 26,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -327,6 +371,7 @@ func initializeProperties() []Property {
 		Price: 320,
 		Rent: 28,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -336,6 +381,7 @@ func initializeProperties() []Property {
 		Price: 200,
 		Rent: 25,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -345,6 +391,7 @@ func initializeProperties() []Property {
 		Price: 350,
 		Rent: 35,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -354,6 +401,7 @@ func initializeProperties() []Property {
 		Price: 400,
 		Rent: 50,
 		OwnerID: "",
+		IsProperty: true,
 		IsOwned: false,
 		IsMortgaged: false,
 	}
@@ -365,13 +413,32 @@ func createRoom(s *Server, sender *Client, msg Message) {
 	// Create game room
 	code := generateRoomCode()
 
+	data, ok := msg.Data.(map[string]interface{})
+	if !ok {
+		fmt.Println("Invalid message data format")
+		return
+	}
+
+	displayNameRaw, ok := data["displayName"]
+	if !ok {
+		fmt.Println("displayName missing")
+		return
+	}
+
+	displayName, ok := displayNameRaw.(string)
+	if !ok {
+		fmt.Println("displayName is not a string")
+		return
+	}
+
 	// Initiate game/player state information
 	playerId := sender.id
 	initialPlayerState := &PlayerState{
-		ID:       playerId,
-		Position: 0,
-		Money:    1500,
-		InJail:   false,
+		ID:          playerId,
+		DisplayName: displayName,
+		Position:    0,
+		Money:       1500,
+		InJail:      false,
 	}
 
 	initialGameState := &GameState{
@@ -409,7 +476,37 @@ func createRoom(s *Server, sender *Client, msg Message) {
 func joinRoom(s *Server, sender *Client, msg Message) {
 
 	fmt.Println("join_room message data: ", msg.Data)
-	code := msg.Data.(string)
+	
+	data, ok := msg.Data.(map[string]interface{})
+	if !ok {
+		fmt.Println("Invalid message data format")
+		return
+	}
+
+	codeRaw, ok := data["code"]
+	if !ok {
+		fmt.Println("join code missing")
+		return
+	}
+
+	code, ok := codeRaw.(string)
+	if !ok {
+		fmt.Println("join code is not a string")
+		return
+	}
+
+	displayNameRaw, ok := data["displayName"]
+	if !ok {
+		fmt.Println("displayName missing")
+		return
+	}
+
+	displayName, ok := displayNameRaw.(string)
+	if !ok {
+		fmt.Println("displayName is not a string")
+		return
+	}
+
 	playerId := sender.id
 
 	if room, ok := s.Rooms[code]; ok {
@@ -418,10 +515,11 @@ func joinRoom(s *Server, sender *Client, msg Message) {
 
 		// Initialize new player
 		newPlayer := &PlayerState{
-			ID:       playerId,
-			Position: 0,
-			Money:    1500,
-			InJail:   false,
+			ID:          playerId,
+			DisplayName: displayName,
+			Position:    0,
+			Money:       1500,
+			InJail:      false,
 		}
 		room.GameState.Players[playerId] = newPlayer
 
@@ -479,10 +577,11 @@ func newId(s *Server, sender *Client, msg Message) {
 // chat function 
 func chat(s *Server, sender *Client, msg Message) {
 	room, ok := isInValidRoom(s, sender)
+	displayName := room.GameState.Players[sender.id].DisplayName
 	if ok {
 		s.broadcastToRoom(room, Message{
 			Type:   "chat",
-			Sender: sender.conn.RemoteAddr().String(),
+			Sender: displayName,
 			Data:   msg.Data,
 		})
 	}
@@ -490,10 +589,11 @@ func chat(s *Server, sender *Client, msg Message) {
 
 func console(s *Server, sender *Client, msg Message) {
 	room, ok := isInValidRoom(s, sender)
+	displayName := room.GameState.Players[sender.id].DisplayName
 	if ok {
 		s.broadcastToRoom(room, Message{
 			Type:   "console",
-			Sender: sender.conn.RemoteAddr().String(),
+			Sender: displayName,
 			Data:   msg.Data,
 		})	
 	}
@@ -502,6 +602,7 @@ func console(s *Server, sender *Client, msg Message) {
 // dice roll function
 func roll(s *Server, sender *Client, msg Message) {
 	room, ok := isInValidRoom(s, sender)
+	displayName := room.GameState.Players[sender.id].DisplayName
 	if ok {
 		d1, d2 := rand.Intn(6) + 1, rand.Intn(6) + 1
 		totalDice := d1 + d2
@@ -516,7 +617,7 @@ func roll(s *Server, sender *Client, msg Message) {
 
 		s.broadcastToRoom(room, Message{
 			Type:   "console",
-			Sender: sender.conn.RemoteAddr().String(),
+			Sender: displayName,
 			Data:   fmt.Sprintf("rolled %d & %d", d1, d2),
 		})
 

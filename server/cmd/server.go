@@ -21,17 +21,20 @@ type Property struct {
 	Price 	    int    `json:"price"`
 	Rent        int		 `json:"rent"`
 	OwnerID     string `json:"ownerId"`
+	IsProperty  bool   `json:"isProperty"`
 	IsOwned     bool   `json:"isOwned"`
 	Color       string `json:"color"`
 	IsMortgaged bool   `json:"isMortgaged"`
 }
 
 type PlayerState struct {
-	ID       string `json:"id"`
-	Position int    `json:"position"`
-	Money    int    `json:"money"`
-	InJail   bool   `json:"inJail"`
-	Color    string `json:"color"`
+	ID              string 		 `json:"id"`
+	DisplayName     string     `json:"displayName"`
+	Position        int    		 `json:"position"`
+	Money           int    		 `json:"money"`
+	InJail          bool   		 `json:"inJail"`
+	Color           string 		 `json:"color"`
+	PropertiesOwned []Property `json:"propertiesOwned"`
 }
 
 type GameRoom struct {

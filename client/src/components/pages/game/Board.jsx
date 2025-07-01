@@ -19,7 +19,12 @@ const propertyColorMap = {
   "blue": "border-blue-700",
 }
 
+import { usePlayer } from "../../../contexts/PlayerProvider";
+import DialogManager from "./DialogManager";
+
 const Board = ({ gameState }) => {
+
+  const { playerId, isMyTurn } = usePlayer();
 
   const numTotalTiles = BOARD_SIZE * 4 - 4;
   const tiles = Array.from({ length: numTotalTiles }, (_, i) => `Tile ${i + 1}`);
@@ -43,27 +48,31 @@ const Board = ({ gameState }) => {
         const playerOnTile = gameState?.players ? Object.values(gameState.players).filter(p => p.position === index) : [];
         const property = gameState?.properties?.[index];
         return (
-          <div key={index}
-               className={`absolute w-[70px] h-[70px] border-t-[10px] border ${propertyColorMap[property?.color] || "border-slate-300"} flex items-center justify-center text-sm flex-col text-center`}
-               style={{
-                top: `${row * 70}px`,
-                left: `${col * 70}px`,
-               }}>
-            {/* Property Name */}
-            {property?.name && (<div className="text-[10px] font-bold w-full">{property.name}</div>)}
+          <div key={index}>
+            <div
+                className={`absolute w-[70px] h-[70px] border-t-[10px] border ${propertyColorMap[property?.color] || "border-slate-300"} flex items-center justify-center text-sm flex-col text-center`}
+                style={{
+                  top: `${row * 70}px`,
+                  left: `${col * 70}px`,
+                }}>
+              {/* Property Name */}
+              {property?.name && (<div className="text-[10px] font-bold w-full">{property.name}</div>)}
 
-            {/* Property Price */}
-            {property?.price && (<div className="text-[10px]">{property.price}</div>)}
+              {/* Property Price */}
+              {property?.price && (<div className="text-[10px]">{property.price}</div>)}
 
-            {/* Players on tile */}
-            {playerOnTile.map((player) => (
-              <div
-                key={player.id}
-                className={`w-3 h-3 rounded-full mt-1 ${playerColorMap[player.color] || "bg-gray-500"}`}>
-              </div>
-            ))}
-          </div>)
+              {/* Players on tile */}
+              {playerOnTile.map((player) => (
+                <div
+                  key={player.id}
+                  className={`w-3 h-3 rounded-full mt-1 ${playerColorMap[player.color] || "bg-gray-500"}`}>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
       })}
+      <DialogManager gameState={gameState} playerId={playerId} isMyTurn={isMyTurn}/>
     </div>
   );
 };
