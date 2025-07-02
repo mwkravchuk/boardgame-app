@@ -26,15 +26,26 @@ var registry = map[string]handlerFn{
 func buyProperty(s *Server, sender *Client, msg Message) {
 	fmt.Println("buy property data: ", msg.Data)
 	room, ok := isInValidRoom(s, sender)
-	if ok {
-		playerId := sender.id
-		currPosition := room.GameState.Players[playerId].Position
-
-		// update property
-		room.GameState.Properties[currPosition].IsOwned = true
-		room.GameState.Properties[currPosition].OwnerID = playerId
-		room.GameState.Players[playerId].Money -= room.GameState.Properties[currPosition].Price
+	if !ok {
+		return
 	}
+
+	playerId := sender.id
+	player := room.GameState.Players[playerId]
+	propertyIndex := player.Position
+	property := &room.GameState.Properties[propertyIndex]
+
+	// update property
+	property.IsOwned = true
+	property.OwnerID = playerId
+	player.Money -= property.Price
+	player.PropertiesOwned = append(player.PropertiesOwned, propertyIndex)
+
+	s.broadcastToRoom(room, Message{
+		Type:   "game_state",
+		Sender: sender.conn.RemoteAddr().String(),
+		Data:   room.GameState,
+	})
 }
 
 func auctionProperty(s *Server, sender *Client, msg Message) {
@@ -43,11 +54,12 @@ func auctionProperty(s *Server, sender *Client, msg Message) {
 
 func colorSelected(s *Server, sender *Client, msg Message) {
 	room, ok := isInValidRoom(s, sender)
-	if ok {
-		color := msg.Data.(string)
-		room.GameState.Players[sender.id].Color = color
-		fmt.Println("color:", room.GameState.Players[sender.id].Color)
+	if !ok {
+		return
 	}
+	color := msg.Data.(string)
+	room.GameState.Players[sender.id].Color = color
+	fmt.Println("color:", room.GameState.Players[sender.id].Color)
 }
 
 // dispatcher --> sends message to corresponding function
@@ -78,34 +90,35 @@ func isInValidRoom(s *Server, sender *Client) (*GameRoom, bool) {
 func startGame(s *Server, sender *Client, msg Message) {
 
 	room, ok := isInValidRoom(s, sender)
-	if ok {
-		// Need at least 2 players
-		if len(room.Players) < 2 {
-			fmt.Println("Not enough players to start")
-			return
-		}
-
-		// This is the "party leader" for now
-		if room.GameState.TurnOrder[0] != sender.id {
-			fmt.Println("Only room creator can start game")
-			return
-		}
-
-		// Tell everyone in the room that the game started
-		s.broadcastToRoom(room, Message{
-			Type:   "game_started",
-			Sender: sender.conn.RemoteAddr().String(),
-		})
-		
-		// Send a new_turn message to the party owner to start game.
-		newTurn(s, sender, msg)
-
-		s.broadcastToRoom(room, Message{
-			Type:   "game_state",
-			Sender: sender.conn.RemoteAddr().String(),
-			Data:   room.GameState,
-		})
+	if !ok {
+		return
 	}
+	// Need at least 2 players
+	if len(room.Players) < 2 {
+		fmt.Println("Not enough players to start")
+		return
+	}
+
+	// This is the "party leader" for now
+	if room.GameState.TurnOrder[0] != sender.id {
+		fmt.Println("Only room creator can start game")
+		return
+	}
+
+	// Tell everyone in the room that the game started
+	s.broadcastToRoom(room, Message{
+		Type:   "game_started",
+		Sender: sender.conn.RemoteAddr().String(),
+	})
+	
+	// Send a new_turn message to the party owner to start game.
+	newTurn(s, sender, msg)
+
+	s.broadcastToRoom(room, Message{
+		Type:   "game_state",
+		Sender: sender.conn.RemoteAddr().String(),
+		Data:   room.GameState,
+	})
 }
 
 const letterBytes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -543,26 +556,28 @@ func newTurn(s *Server, sender *Client, msg Message) {
 
 	// Find the correct room
 	room, ok := isInValidRoom(s, sender)
-	if ok {
-		// Update the current turn for this room
-		currentTurnId := room.GameState.TurnOrder[room.GameState.CurrentTurn % len(room.GameState.TurnOrder)]
-		fmt.Println("New turn message: ", currentTurnId)
-
-		// Tell players that current turn has updated
-		s.broadcastToRoom(room, Message{
-			Type:   "new_turn",
-			Sender: sender.conn.RemoteAddr().String(),
-			Data:   currentTurnId,
-		})
-
-		// logic to reset "hasRolled" dice on client side
-		s.signal(sender, Message{
-			Type: "reset_roll_button",
-			Data: false,
-		})
-
-		room.GameState.CurrentTurn += 1
+	if !ok {
+		return
 	}
+	// Update the current turn for this room
+	currentTurnId := room.GameState.TurnOrder[room.GameState.CurrentTurn % len(room.GameState.TurnOrder)]
+	fmt.Println("New turn message: ", currentTurnId)
+
+	// Tell players that current turn has updated
+	s.broadcastToRoom(room, Message{
+		Type:   "new_turn",
+		Sender: sender.conn.RemoteAddr().String(),
+		Data:   currentTurnId,
+	})
+
+	// logic to reset "hasRolled" dice on client side
+	s.signal(sender, Message{
+		Type: "reset_roll_button",
+		Data: false,
+	})
+
+	room.GameState.CurrentTurn += 1
+	
 }
 
 func newId(s *Server, sender *Client, msg Message) {
@@ -578,53 +593,56 @@ func newId(s *Server, sender *Client, msg Message) {
 func chat(s *Server, sender *Client, msg Message) {
 	room, ok := isInValidRoom(s, sender)
 	displayName := room.GameState.Players[sender.id].DisplayName
-	if ok {
-		s.broadcastToRoom(room, Message{
-			Type:   "chat",
-			Sender: displayName,
-			Data:   msg.Data,
-		})
+	if !ok {
+		return
 	}
+	s.broadcastToRoom(room, Message{
+		Type:   "chat",
+		Sender: displayName,
+		Data:   msg.Data,
+	})
 }
 
 func console(s *Server, sender *Client, msg Message) {
 	room, ok := isInValidRoom(s, sender)
 	displayName := room.GameState.Players[sender.id].DisplayName
-	if ok {
-		s.broadcastToRoom(room, Message{
-			Type:   "console",
-			Sender: displayName,
-			Data:   msg.Data,
-		})	
+	if !ok {
+		return
 	}
+	s.broadcastToRoom(room, Message{
+		Type:   "console",
+		Sender: displayName,
+		Data:   msg.Data,
+	})	
 }
 
 // dice roll function
 func roll(s *Server, sender *Client, msg Message) {
 	room, ok := isInValidRoom(s, sender)
 	displayName := room.GameState.Players[sender.id].DisplayName
-	if ok {
-		d1, d2 := rand.Intn(6) + 1, rand.Intn(6) + 1
-		totalDice := d1 + d2
-		playerId := sender.id
-		room.GameState.Players[playerId].Position = (room.GameState.Players[playerId].Position + totalDice) % 40
-
-		// confirm to sender that dice has been rolled
-		s.signal(sender, Message{
-			Type: "roll_dice",
-			Data: true,
-		})
-
-		s.broadcastToRoom(room, Message{
-			Type:   "console",
-			Sender: displayName,
-			Data:   fmt.Sprintf("rolled %d & %d", d1, d2),
-		})
-
-		s.broadcastToRoom(room, Message{
-			Type:   "game_state",
-			Sender: sender.conn.RemoteAddr().String(),
-			Data:   room.GameState,
-		})
+	if !ok {
+		return
 	}
+	d1, d2 := rand.Intn(6) + 1, rand.Intn(6) + 1
+	totalDice := d1 + d2
+	playerId := sender.id
+	room.GameState.Players[playerId].Position = (room.GameState.Players[playerId].Position + totalDice) % 40
+
+	// confirm to sender that dice has been rolled
+	s.signal(sender, Message{
+		Type: "roll_dice",
+		Data: true,
+	})
+
+	s.broadcastToRoom(room, Message{
+		Type:   "console",
+		Sender: displayName,
+		Data:   fmt.Sprintf("rolled %d & %d", d1, d2),
+	})
+
+	s.broadcastToRoom(room, Message{
+		Type:   "game_state",
+		Sender: sender.conn.RemoteAddr().String(),
+		Data:   room.GameState,
+	})
 }

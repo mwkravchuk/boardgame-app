@@ -34,7 +34,7 @@ type PlayerState struct {
 	Money           int    		 `json:"money"`
 	InJail          bool   		 `json:"inJail"`
 	Color           string 		 `json:"color"`
-	PropertiesOwned []Property `json:"propertiesOwned"`
+	PropertiesOwned []int      `json:"properties"` // store indices of owned properties
 }
 
 type GameRoom struct {
