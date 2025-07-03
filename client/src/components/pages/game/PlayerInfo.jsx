@@ -1,10 +1,10 @@
 const PlayerInfo = ({ gameState }) => {
 
-  if (!gameState?.players) return null;
+  if (!gameState?.players || !gameState?.properties) return null;
+  const properties = gameState.properties;
 
   return (
     <div>
-      <h2>player info</h2>
       <div>
         {Object.values(gameState.players).map((player) => (
           <div
@@ -12,12 +12,15 @@ const PlayerInfo = ({ gameState }) => {
             className="flex flex-col"
           >
             <div className="flex">
-              <span>{player.displayName}</span>
-              <span>{player.color}</span>
+              <span>{player.displayName} {player.money}</span>
             </div>
-            <div>
-              <span>{player.money}</span>
-            </div>
+            <div className="flex flex-col text-xs">
+                {player.properties?.map((propertyIndex) => (
+                  <div key={propertyIndex} className="">
+                    {properties[propertyIndex].name}
+                  </div>
+                ))}
+              </div>
           </div>
         ))}
       </div>

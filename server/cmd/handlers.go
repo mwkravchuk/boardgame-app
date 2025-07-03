@@ -21,6 +21,31 @@ var registry = map[string]handlerFn{
 	"color_selected":   colorSelected,
 	"buy_property":     buyProperty,
 	"auction_property": auctionProperty,
+	"pay_rent":         payRent,
+}
+
+func payRent(s *Server, sender *Client, msg Message) {
+	fmt.Println("pay rent data: ", msg.Data)
+	room, ok := isInValidRoom(s, sender)
+	if !ok {
+		return
+	}
+
+	playerId := sender.id
+	player := room.GameState.Players[playerId]
+	propertyIndex := player.Position
+	property := &room.GameState.Properties[propertyIndex]
+	propertyOwner := room.GameState.Players[property.OwnerID]
+
+	// send money to deserved player
+	player.Money -= property.Rent
+	propertyOwner.Money += property.Rent
+
+	s.broadcastToRoom(room, Message{
+		Type:   "game_state",
+		Sender: sender.conn.RemoteAddr().String(),
+		Data:   room.GameState,
+	})
 }
 
 func buyProperty(s *Server, sender *Client, msg Message) {

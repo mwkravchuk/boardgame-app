@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useWebSocket } from "../../../contexts/WebSocketProvider";
 
 import BuyPropertyDialog from "./dialogs/BuyProperty";
+import OweRentDialog from "./dialogs/OweRent";
 
 const DialogManager = ({ gameState, playerId, isMyTurn }) => {
 
@@ -26,6 +27,15 @@ const DialogManager = ({ gameState, playerId, isMyTurn }) => {
       });
       lastPromptedTileIndexRef.current = player.position;
     }
+
+    if (tile && tile.isProperty && tile.isOwned && tile.ownerId !== playerId) {
+      console.log("we are on a property owned by someone else. pay rent");
+      setPrompt({
+        type: "owe_rent",
+        data: { property: tile, player },
+      })
+    }
+
   }, [gameState, playerId, isMyTurn]);
 
 
@@ -41,6 +51,11 @@ const DialogManager = ({ gameState, playerId, isMyTurn }) => {
     closePrompt();
   };
 
+  const handlePayRent = () => {
+    sendMessage("pay_rent", null);
+    closePrompt();
+  };
+
   return (
     <>
       {prompt?.type === "buy_property" && (
@@ -53,6 +68,15 @@ const DialogManager = ({ gameState, playerId, isMyTurn }) => {
         />
       )}
 
+      {prompt?.type === "owe_rent" && (
+        <OweRentDialog
+          open={true}
+          onClose={closePrompt}
+          property={prompt.data.property}
+          playerName={gameState.players?.[playerId].displayName}
+          onPayRent={handlePayRent}
+        />
+      )}
     </>
   );
 };
