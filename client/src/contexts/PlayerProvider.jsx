@@ -14,21 +14,22 @@ export const PlayerProvider = ({ children }) => {
   useEffect(() => {
     
     const updatePlayerId = (message) => {
-      console.log("newid msg:", message);
       setPlayerId(message.data);
     };
 
     const updateCurrentTurnId = (message) => {
-      console.log("game msg:", message);
-      setCurrentTurnId(message.data);
+      console.log("game_state msg:", message.data);
+      console.log("current turn:", message.data.currentTurn)
+      const currentTurnId = message.data.turnOrder[message.data.currentTurn];
+      setCurrentTurnId(currentTurnId);
     };
 
     addListener("new_id", updatePlayerId);
-    addListener("new_turn", updateCurrentTurnId);
+    addListener("game_state", updateCurrentTurnId);
 
     return () => {
       removeListener("new_id", updatePlayerId);
-      removeListener("new_turn", updateCurrentTurnId);
+      removeListener("game_state", updateCurrentTurnId);
     };
 
   }, [addListener, removeListener]);

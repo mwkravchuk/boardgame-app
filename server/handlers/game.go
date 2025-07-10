@@ -23,24 +23,15 @@ func StartGame(s *network.Server, sender *shared.Client, msg shared.Message) {
 		return
 	}
 
-	// Tell everyone in the room that the game started
+	// Indicate game start by broadcasting game state.
 	s.BroadcastToRoom(room, shared.Message{
 		Type:   "game_started",
 		Sender: sender.Conn.RemoteAddr().String(),
 	})
-	
-	// Send a new_turn message to the party owner to start game.
-	NewTurn(s, sender, msg)
-
-	s.BroadcastToRoom(room, shared.Message{
-		Type:   "game_state",
-		Sender: sender.Conn.RemoteAddr().String(),
-		Data:   room.GameState,
-	})
 }
 
 func BuyProperty(s *network.Server, sender *shared.Client, msg shared.Message) {
-	fmt.Println("buy property data: ", msg.Data)
+	fmt.Println("Buying property")
 	room, ok := IsInValidRoom(s, sender)
 	if !ok {
 		return
@@ -65,11 +56,11 @@ func BuyProperty(s *network.Server, sender *shared.Client, msg shared.Message) {
 }
 
 func AuctionProperty(s *network.Server, sender *shared.Client, msg shared.Message) {
-	fmt.Println("auction property data: ", msg.Data)
+	fmt.Println("Auctioning property", msg.Data)
 }
 
 func PayRent(s *network.Server, sender *shared.Client, msg shared.Message) {
-	fmt.Println("pay rent data: ", msg.Data)
+	fmt.Println("Paying rent", msg.Data)
 	room, ok := IsInValidRoom(s, sender)
 	if !ok {
 		return

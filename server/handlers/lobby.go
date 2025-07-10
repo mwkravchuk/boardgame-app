@@ -148,6 +148,5 @@ func ColorSelected(s *network.Server, sender *shared.Client, msg shared.Message)
 	}
 	color := msg.Data.(string)
 	room.GameState.Players[sender.Id].Color = color
-	fmt.Println("color:", room.GameState.Players[sender.Id].Color)
 }
 

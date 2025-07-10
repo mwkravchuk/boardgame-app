@@ -18,12 +18,11 @@ const Lobby = () => {
   const [selectedColor, setSelectedColor] = useState(null);
   const handleColorSelect = (color) => {
     setSelectedColor(color);
+    sendMessage("color_selected", selectedColor);
   };
 
   useEffect(() => {
     const handleGameStarted = () => {
-      console.log("Game started. Go to game board mate");
-      sendMessage("color_selected", selectedColor);
       navigate("/game");
     };
 
