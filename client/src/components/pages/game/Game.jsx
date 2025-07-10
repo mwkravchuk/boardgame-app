@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
-import Board from "./Board";
-import Controls from "./Controls";
+import Board from "./board/Board";
+import Controls from "./board/Controls";
 import ChatBox from "../../ChatBox";
-import PlayerInfo from "./PlayerInfo";
-import Console from "./Console";
+import PlayerInfo from "./sidebar/PlayerInfo";
+import Console from "./sidebar/Console";
 
 import { Separator } from "../../ui/separator";
 

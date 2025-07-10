@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useWebSocket } from "../../../contexts/WebSocketProvider";
+import { useWebSocket } from "../../../../contexts/WebSocketProvider";
 
 const Console = () => {
   const { addListener, removeListener } = useWebSocket();

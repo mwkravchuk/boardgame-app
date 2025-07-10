@@ -11,21 +11,34 @@ import {
 } from "../../../../components/ui/dialog"
 import { Button } from "../../../../components/ui/button";
 
-const BuyPropertyDialog = ({ open, onClose, property, onBuy, onAuction }) => {
+const BuyPropertyDialog = ({ open, close, prompt, sendMessage }) => {
+
+  const property = prompt.data.property;
+
+  const handleBuy = () => {
+    sendMessage("buy_property", null);
+    close();
+  };
+
+  const handleAuction = () => {
+    sendMessage("auction_property", null);
+    close();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={close}>
       <DialogPortal>
         <DialogOverlay/>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{property?.name}</DialogTitle>
+            <DialogTitle>{property.name}</DialogTitle>
             <DialogDescription>
-              This property costs ${property?.price}. Would you like to buy or auction it?
+              This property costs ${property.price}. Would you like to buy or auction it?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button onClick={onBuy}>Buy</Button>
-            <Button variant="outline" onClick={onAuction}>Auction</Button>
+            <Button onClick={handleBuy}>Buy</Button>
+            <Button variant="outline" onClick={handleAuction}>Auction</Button>
             <DialogClose asChild>
               <Button variant="ghost">Cancel</Button>
             </DialogClose>

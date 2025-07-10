@@ -11,20 +11,29 @@ import {
 } from "../../../../components/ui/dialog"
 import { Button } from "../../../../components/ui/button";
 
-const OweRentDialog = ({ open, onClose, property, playerName, onPayRent }) => {
+const OweRentDialog = ({ open, close, prompt, sendMessage }) => {
+
+  const property = prompt.data.property;
+  const displayName = prompt.data.displayName;
+
+  const handlePayRent = () => {
+    sendMessage("pay_rent", null);
+    close();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={close}>
       <DialogPortal>
         <DialogOverlay/>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{playerName}</DialogTitle>
+            <DialogTitle>{displayName}</DialogTitle>
             <DialogDescription>
               This property is owned. You must pay ${property.rent}.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button onClick={onPayRent}>Pay</Button>
+            <Button onClick={handlePayRent}>Pay</Button>
             <DialogClose asChild>
               <Button variant="ghost">Cancel</Button>
             </DialogClose>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useWebSocket } from "../../../contexts/WebSocketProvider";
-import { usePlayer } from "../../../contexts/PlayerProvider";
+import { useWebSocket } from "../../../../contexts/WebSocketProvider";
+import { usePlayer } from "../../../../contexts/PlayerProvider";
 
 const Controls = () => {
     const { sendMessage, addListener, removeListener } = useWebSocket();
