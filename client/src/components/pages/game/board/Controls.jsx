@@ -1,32 +1,12 @@
-import { useState, useEffect } from "react";
 import { useWebSocket } from "../../../../contexts/WebSocketProvider";
 import { usePlayer } from "../../../../contexts/PlayerProvider";
 
-const Controls = () => {
-    const { sendMessage, addListener, removeListener } = useWebSocket();
-    const { isMyTurn } = usePlayer();
-  
-    const [hasRolled, setHasRolled] = useState(false);
+const Controls = ({ gameState }) => {
+    const { sendMessage } = useWebSocket();
+    const { playerId } = usePlayer();
 
-    useEffect(() => {
-      const updateBoardFromRoll = (message) => {
-        setHasRolled(message.data)
-      };
-  
-      const resetRollButton = (message) => {
-        //console.log("Reset Roll callback:", message)
-        setHasRolled(message.data)
-      };
-
-      addListener("roll_dice", updateBoardFromRoll);
-      addListener("reset_roll_button", resetRollButton);
-  
-      return () => {
-        removeListener("roll_dice", updateBoardFromRoll);
-        removeListener("reset_roll_button", resetRollButton);
-      };
-    }, [addListener, removeListener]);
-    
+    const isMyTurn = playerId === gameState.turnOrder[gameState.currentTurn];
+    const hasRolled = false;    
   
     const handleRollDice = () => {
       sendMessage("roll_dice", "");

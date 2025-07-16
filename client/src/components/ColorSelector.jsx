@@ -1,6 +1,6 @@
 const availableColors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
 
-const ColorSelector = ({ selectedColor, onSelect }) => {
+const ColorSelector = ({ selectedColor, handleColorSelect }) => {
 
   return (
     <div className="flex gap-1">
@@ -14,7 +14,7 @@ const ColorSelector = ({ selectedColor, onSelect }) => {
             border: selectedColor === color ? "solid 2px black" : "solid 1px gray",
             cursor: "pointer",
           }}
-          onClick={() => onSelect(color)}
+          onClick={() => handleColorSelect(color)}
         ></button>
       ))}
     </div>

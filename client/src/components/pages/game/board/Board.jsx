@@ -49,7 +49,7 @@ const Board = ({ gameState }) => {
         const playersOnTile = gameState?.players ? Object.values(gameState.players).filter(p => p.position === index) : [];
         const property = gameState?.properties?.[index];
         return (
-          <Tile index={index} row={row} col={col} property={property} playersOnTile={playersOnTile} propertyColorMap={propertyColorMap} playerColorMap={playerColorMap} /> 
+          <Tile key={index} index={index} row={row} col={col} property={property} playersOnTile={playersOnTile} propertyColorMap={propertyColorMap} playerColorMap={playerColorMap} /> 
         )
       })}
       <DialogManager gameState={gameState} playerId={playerId} isMyTurn={isMyTurn}/>

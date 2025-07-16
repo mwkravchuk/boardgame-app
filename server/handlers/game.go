@@ -23,7 +23,7 @@ func StartGame(s *network.Server, sender *shared.Client, msg shared.Message) {
 		return
 	}
 
-	// Indicate game start by broadcasting game state.
+	// Indicate game start
 	s.BroadcastToRoom(room, shared.Message{
 		Type:   "game_started",
 		Sender: sender.Conn.RemoteAddr().String(),

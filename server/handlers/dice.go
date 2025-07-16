@@ -20,12 +20,6 @@ func Roll(s *network.Server, sender *shared.Client, msg shared.Message) {
 	playerId := sender.Id
 	room.GameState.Players[playerId].Position = (room.GameState.Players[playerId].Position + totalDice) % 40
 
-	// confirm to sender that dice has been rolled
-	s.Signal(sender, shared.Message{
-		Type: "roll_dice",
-		Data: true,
-	})
-
 	s.BroadcastToRoom(room, shared.Message{
 		Type:   "console",
 		Sender: displayName,

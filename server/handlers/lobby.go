@@ -71,6 +71,13 @@ func CreateRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
 	// Add the room to the server's list of rooms
 	s.Rooms[code] = room
 
+	// Show that a new id has been created
+	s.Signal(sender, shared.Message{
+		Type:   "new_id",
+		Sender: sender.Conn.RemoteAddr().String(),
+		Data:   playerId,
+	})
+
 	// Sender joins the room after it was created. Let them know!
 	s.Signal(sender, shared.Message{
 		Type:   "room_joined",
@@ -133,6 +140,20 @@ func JoinRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
 		room.GameState.TurnOrder = append(room.GameState.TurnOrder, playerId)
 		s.ClientToRoomCode[playerId] = code
 
+		// Show that a new id has been created
+		s.Signal(sender, shared.Message{
+			Type:   "new_id",
+			Sender: sender.Conn.RemoteAddr().String(),
+			Data:   playerId,
+		})
+
+		// broadcast gamestate to prepare for game start
+		s.BroadcastToRoom(room, shared.Message{
+			Type:   "game_state",
+			Sender: sender.Conn.RemoteAddr().String(),
+			Data:   room.GameState,
+		})
+
 		s.Signal(sender, shared.Message{
 			Type:   "room_joined",
 			Sender: sender.Conn.RemoteAddr().String(),
@@ -146,6 +167,7 @@ func ColorSelected(s *network.Server, sender *shared.Client, msg shared.Message)
 	if !ok {
 		return
 	}
+	fmt.Println("color selected msg: ", msg)
 	color := msg.Data.(string)
 	room.GameState.Players[sender.Id].Color = color
 }
