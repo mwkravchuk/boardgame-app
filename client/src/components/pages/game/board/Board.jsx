@@ -25,7 +25,7 @@ import Tile from "./Tile";
 
 const Board = ({ gameState }) => {
 
-  const { playerId, isMyTurn } = usePlayer();
+  const { playerId } = usePlayer();
 
   const numTotalTiles = BOARD_SIZE * 4 - 4;
   const tiles = Array.from({ length: numTotalTiles }, (_, i) => `Tile ${i + 1}`);
@@ -52,7 +52,7 @@ const Board = ({ gameState }) => {
           <Tile key={index} index={index} row={row} col={col} property={property} playersOnTile={playersOnTile} propertyColorMap={propertyColorMap} playerColorMap={playerColorMap} /> 
         )
       })}
-      <DialogManager gameState={gameState} playerId={playerId} isMyTurn={isMyTurn}/>
+      <DialogManager gameState={gameState} playerId={playerId}/>
     </div>
   );
 };

@@ -9,7 +9,6 @@ export const GameProvider = ({ children }) => {
 
   useEffect(() => {
     const handleGameStateUpdate = (message) => {
-      console.log("gamestate update before game start: ", message.data)
       setGameState(message.data);
     };
 

@@ -38,7 +38,7 @@ func BuyProperty(s *network.Server, sender *shared.Client, msg shared.Message) {
 	}
 
 	playerId := sender.Id
-	player := room.GameState.Players[playerId]
+	player := room.GameState.Players[sender.Id]
 	propertyIndex := player.Position
 	property := &room.GameState.Properties[propertyIndex]
 

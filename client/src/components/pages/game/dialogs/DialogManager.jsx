@@ -4,12 +4,15 @@ import { useWebSocket } from "../../../../contexts/WebSocketProvider";
 import BuyPropertyDialog from "./BuyProperty";
 import OweRentDialog from "./OweRent";
 
-const DialogManager = ({ gameState, playerId, isMyTurn }) => {
+const DialogManager = ({ gameState, playerId }) => {
 
   const { sendMessage } = useWebSocket();
 
   const [prompt, setPrompt] = useState(null);
   const lastPromptedTileIndexRef = useRef(null);
+
+  const currentPlayerId = gameState.turnOrder[gameState.currentTurn];
+  const isMyTurn = playerId === currentPlayerId;
 
   useEffect(() => {
     if (!gameState || !playerId || !isMyTurn) return;

@@ -17,8 +17,9 @@ func Roll(s *network.Server, sender *shared.Client, msg shared.Message) {
 
 	d1, d2 := rand.Intn(6) + 1, rand.Intn(6) + 1
 	totalDice := d1 + d2
-	playerId := sender.Id
-	room.GameState.Players[playerId].Position = (room.GameState.Players[playerId].Position + totalDice) % 40
+	player := room.GameState.Players[sender.Id]
+	player.Position = (player.Position + totalDice) % 40
+	player.HasRolled = true
 
 	s.BroadcastToRoom(room, shared.Message{
 		Type:   "console",
@@ -40,17 +41,13 @@ func NewTurn(s *network.Server, sender *shared.Client, msg shared.Message) {
 		return
 	}
 
-	room.GameState.CurrentTurn += 1
+	room.GameState.CurrentTurn = (room.GameState.CurrentTurn + 1) % len(room.GameState.Players)
+	player := room.GameState.Players[sender.Id]
+	player.HasRolled = false
 
 	s.BroadcastToRoom(room, shared.Message{
 		Type:   "game_state",
 		Sender: sender.Conn.RemoteAddr().String(),
 		Data:   room.GameState,
-	})
-
-	// logic to reset "hasRolled" dice on client side
-	s.Signal(sender, shared.Message{
-		Type: "reset_roll_button",
-		Data: false,
 	})
 }

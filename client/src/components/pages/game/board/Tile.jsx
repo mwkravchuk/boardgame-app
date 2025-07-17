@@ -6,9 +6,9 @@ const Tile = ({ index, row, col, property, playersOnTile, propertyColorMap, play
             top: `${row * 70}px`,
             left: `${col * 70}px`,}}>
       {/* Property Name */}
-      {property?.name && (<div className="text-[10px] font-bold w-full">{property.name}</div>)}
+      {property?.name && (<div className="text-[8px] font-bold w-full">{property.name}</div>)}
       {/* Property Price */}
-      {property?.price && (<div className="text-[10px]">{property.price}</div>)}
+      {property?.price && (<div className="text-[8px]">{property.price}</div>)}
       {/* Players on tile */}
       {playersOnTile.map((player) => (
         <div
