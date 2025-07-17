@@ -82,3 +82,7 @@ func PayRent(s *network.Server, sender *shared.Client, msg shared.Message) {
 		Data:   room.GameState,
 	})
 }
+
+func Bankrupt(s *network.Server, sender *shared.Client, msg shared.Message) {
+
+}

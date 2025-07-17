@@ -3,12 +3,13 @@ import { useWebSocket } from "../../../../contexts/WebSocketProvider";
 
 import BuyPropertyDialog from "./BuyProperty";
 import OweRentDialog from "./OweRent";
+import InitiateTradeDialog from "./InitiateTrade";
+import BankruptDialog from "./Bankrupt";
 
-const DialogManager = ({ gameState, playerId }) => {
+const DialogManager = ({ gameState, playerId, prompt, setPrompt }) => {
 
   const { sendMessage } = useWebSocket();
 
-  const [prompt, setPrompt] = useState(null);
   const lastPromptedTileIndexRef = useRef(null);
 
   const currentPlayerId = gameState.turnOrder[gameState.currentTurn];
@@ -41,7 +42,7 @@ const DialogManager = ({ gameState, playerId }) => {
       lastPromptedTileIndexRef.current = player.position;
     }
 
-  }, [gameState, playerId, isMyTurn]);
+  }, [gameState, playerId, isMyTurn, setPrompt]);
 
   const closePrompt = () => setPrompt(null);
 
@@ -61,7 +62,14 @@ const DialogManager = ({ gameState, playerId }) => {
       return (
         <OweRentDialog {...dialogProps} />
       );
-
+    case "initiate_trade":
+      return (
+        <InitiateTradeDialog {...dialogProps} />
+      )
+    case "bankrupt":
+      return (
+        <BankruptDialog {...dialogProps}/>
+      )
     default:
       return null;
   }

@@ -11,12 +11,10 @@ import {
 } from "../../../../components/ui/dialog"
 import { Button } from "../../../../components/ui/button";
 
-const OweRentDialog = ({ open, close, prompt, sendMessage }) => {
+const BankruptDialog = ({ open, close, prompt, sendMessage }) => {
 
-  const property = prompt.data.property;
-
-  const handlePayRent = () => {
-    sendMessage("pay_rent", null);
+  const handleBankrupt = () => {
+    sendMessage("bankrupt", null);
     close();
   };
 
@@ -28,11 +26,11 @@ const OweRentDialog = ({ open, close, prompt, sendMessage }) => {
           <DialogHeader>
             <DialogTitle>{prompt.data.displayName}</DialogTitle>
             <DialogDescription>
-              This property is owned. You must pay ${property.rent}.
+              Are you sure you want to bankrupt?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button onClick={handlePayRent}>Pay</Button>
+            <Button onClick={handleBankrupt}>Bankrupt</Button>
             <DialogClose asChild>
               <Button variant="ghost">Cancel</Button>
             </DialogClose>
@@ -43,4 +41,4 @@ const OweRentDialog = ({ open, close, prompt, sendMessage }) => {
   );
 };
 
-export default OweRentDialog;
+export default BankruptDialog;
