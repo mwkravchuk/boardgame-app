@@ -1,23 +1,4 @@
 const BOARD_SIZE = 11; // 11 tiles per side
-const playerColorMap = {
-  "red": "bg-red-500",
-  "orange": "bg-orange-500",
-  "yellow": "bg-yellow-500",
-  "green": "bg-green-500",
-  "blue": "bg-blue-500",
-  "purple": "bg-purple-500",
-};
-const propertyColorMap = {
-  "brown": "border-orange-900",
-  "black": "border-neutral-900",
-  "light blue": "border-blue-300",
-  "pink": "border-fuchsia-500",
-  "orange": "border-orange-400",
-  "red": "border-red-600",
-  "yellow": "border-yellow-300",
-  "green": "border-green-600",
-  "blue": "border-blue-700",
-};
 
 import Controls from "./Controls";
 import Tile from "./Tile";
@@ -40,7 +21,7 @@ const Board = ({ gameState, setPrompt }) => {
   };
 
   return (
-    <div className="grid grid-cols-11 grid-rows-11 w-[770px] h-[770px] bg-amber-50 relative">
+    <div className="relative grid grid-cols-11 grid-rows-11 w-[770px] h-[770px] bg-amber-50">
       {tiles.map((_, index) => {
         const { row, col } = getTilePosition(index);
         const playersOnTile = gameState?.players ? Object.values(gameState.players).filter(p => p.position === index) : [];
@@ -51,9 +32,7 @@ const Board = ({ gameState, setPrompt }) => {
                 row={row}
                 col={col}
                 property={property}
-                playersOnTile={playersOnTile}
-                propertyColorMap={propertyColorMap}
-                playerColorMap={playerColorMap}/> 
+                playersOnTile={playersOnTile}/> 
         )
       })}
       {/* Controls centered on the board */}

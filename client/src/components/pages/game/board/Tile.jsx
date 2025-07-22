@@ -1,4 +1,24 @@
-const Tile = ({ index, row, col, property, playersOnTile, propertyColorMap, playerColorMap }) => {
+const playerColorMap = {
+  "red": "bg-red-500",
+  "orange": "bg-orange-500",
+  "yellow": "bg-yellow-500",
+  "green": "bg-green-500",
+  "blue": "bg-blue-500",
+  "purple": "bg-purple-500",
+};
+const propertyColorMap = {
+  "brown": "border-orange-900",
+  "black": "border-neutral-900",
+  "light blue": "border-blue-300",
+  "pink": "border-fuchsia-500",
+  "orange": "border-orange-400",
+  "red": "border-red-600",
+  "yellow": "border-yellow-300",
+  "green": "border-green-600",
+  "blue": "border-blue-700",
+};
+
+const Tile = ({ index, row, col, property, playersOnTile }) => {
   return (
     <div key={index}
          className={`absolute w-[70px] h-[70px] border-t-[10px] border ${propertyColorMap[property?.color] || "border-slate-300"} flex text-sm flex-col text-center`}
