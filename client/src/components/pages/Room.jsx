@@ -4,6 +4,8 @@ import { useWebSocket } from "../../contexts/WebSocketProvider";
 
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Alert, AlertTitle, AlertDescription } from "../ui/alert";
+import { AlertCircleIcon } from "lucide-react"
 
 const Room = () => {
   const navigate = useNavigate();
@@ -11,18 +13,26 @@ const Room = () => {
 
   const [joinCode, setJoinCode] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
 
     const handleRoomJoined = (message) => {
-      console.log("message: ", message);
+      setError(false);
       navigate("/lobby", { state: { roomCode: message.data }});
     };
 
+    const handleRoomJoinedFail = (message) => {
+      console.log("join fail: ", message);
+      setError(true);
+    };
+
     addListener("room_joined", handleRoomJoined);
+    addListener("room_joined_fail", handleRoomJoinedFail);
 
     return () => {
-      removeListener("room_", handleRoomJoined);
+      removeListener("room_joined", handleRoomJoined);
+      removeListener("room_joined_fail", handleRoomJoinedFail);
     };
   }, [addListener, removeListener, navigate]);
 
@@ -38,28 +48,48 @@ const Room = () => {
   };
 
   return (
-    <div className="flex flex-col justify-self-center self-center gap-4 p-10 border-solid border-3 bg-amber-100 border-amber-300 h-full">
-      <Input
-        name="displayName"
-        value={displayName}
-        onChange={(e) => setDisplayName(e.target.value)}
-        placeholder="Enter display name"
-      />
-      <Button className="py-5 px-8" variant="outline" onClick={handleCreateRoom}>CREATE ROOM</Button>
-      {/* Form to join a room */}
-      <form className="flex gap-2" onSubmit={handleJoinRoom}>
+    <div className="flex flex-col justify-self-center self-center gap-4 h-full">
+      {/* Enter username */}
+      <div>
+        <h2 className="text-2xl">NAME</h2>
         <Input
-          name="join"
-          value={joinCode}
-          onChange={(e) => setJoinCode(e.target.value)}
-          placeholder="Enter room code"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleJoinRoom();
-            }
-          }}/>
-        <Button className="py-5 px-8" variant="outline" type="submit">JOIN ROOM</Button>
-      </form>
+          name="displayName"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+          placeholder="Enter name"
+        />
+      </div>
+      {/* Create a room */}
+      <div className="flex flex-col">
+        <h2 className="text-2xl">HOST</h2>
+        <Button className="py-5 px-8" onClick={handleCreateRoom}>CREATE ROOM</Button>
+      </div>
+      {/* Join a room */}
+      <div className="flex flex-col">
+        <h2 className="text-2xl">PRIVATE</h2>
+        <form className="flex" onSubmit={handleJoinRoom}>
+          <Input
+            name="join"
+            value={joinCode}
+            onChange={(e) => setJoinCode(e.target.value)}
+            placeholder="Enter room code"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleJoinRoom();
+              }
+            }}/>
+          <Button className="px-3" type="submit">JOIN ROOM</Button>
+        </form>
+        {error && (
+          <Alert variant="destructive" className="mt-1">
+            <AlertCircleIcon />
+            <AlertTitle>Unable to join room.</AlertTitle>
+            <AlertDescription>
+              <p>Please verify room code and try again.</p>
+            </AlertDescription>
+          </Alert>
+        )}
+      </div>
     </div>
   );
 };

@@ -19,10 +19,6 @@ a:visited {
   text-decoration: none;
 }
 
-ul {
-  list-style: none;
-}
-
 /* Reused styling */
 .btn-primary {
   @apply bg-amber-300 hover:bg-amber-500 px-4 py-1 disabled:opacity-20;

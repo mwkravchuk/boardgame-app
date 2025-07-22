@@ -15,7 +15,7 @@ const App = () => {
               <RenderRoutes />
             </div>
           </div> 
-          <Footer />
+          {/*<Footer />*/}
         </div>
       </BrowserRouter>
     </>

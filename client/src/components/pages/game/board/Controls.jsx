@@ -1,6 +1,8 @@
 import { useWebSocket } from "../../../../contexts/WebSocketProvider";
 import { usePlayer } from "../../../../contexts/PlayerProvider";
 
+import { Button } from "../../../ui/button";
+
 const Controls = ({ gameState, setPrompt }) => {
   const { sendMessage } = useWebSocket();
   const { playerId } = usePlayer();
@@ -36,11 +38,11 @@ const Controls = ({ gameState, setPrompt }) => {
   };
 
   return (
-    <div className="flex flex-row gap-4 bg-amber-200">
-      <button className="btn-primary" disabled={!isMyTurn || hasRolled} onClick={handleRollDice}>ROLL DICE</button>
-      <button className="btn-primary" disabled={!isMyTurn || !hasRolled} onClick={handleEndTurn}>END TURN</button>
-      <button className="btn-primary" disabled={!isMyTurn} onClick={handleTrade}>TRADE</button>
-      <button className="btn-primary" disabled={!isMyTurn} onClick={handleBankrupt}>BANKRUPT</button>
+    <div className="flex flex-row gap-1">
+      <Button disabled={!isMyTurn || hasRolled} onClick={handleRollDice}>ROLL DICE</Button>
+      <Button disabled={!isMyTurn || !hasRolled} onClick={handleEndTurn}>END TURN</Button>
+      <Button disabled={!isMyTurn} onClick={handleTrade}>TRADE</Button>
+      <Button disabled={!isMyTurn} onClick={handleBankrupt}>BANKRUPT</Button>
     </div>
   );
 };

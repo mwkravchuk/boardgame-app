@@ -19,9 +19,10 @@ const propertyColorMap = {
   "blue": "border-blue-700",
 };
 
+import Controls from "./Controls";
 import Tile from "./Tile";
 
-const Board = ({ gameState }) => {
+const Board = ({ gameState, setPrompt }) => {
 
   const numTotalTiles = BOARD_SIZE * 4 - 4;
   const tiles = Array.from({ length: numTotalTiles }, (_, i) => `Tile ${i + 1}`);
@@ -45,9 +46,20 @@ const Board = ({ gameState }) => {
         const playersOnTile = gameState?.players ? Object.values(gameState.players).filter(p => p.position === index) : [];
         const property = gameState?.properties?.[index];
         return (
-          <Tile key={index} index={index} row={row} col={col} property={property} playersOnTile={playersOnTile} propertyColorMap={propertyColorMap} playerColorMap={playerColorMap} /> 
+          <Tile key={index}
+                index={index}
+                row={row}
+                col={col}
+                property={property}
+                playersOnTile={playersOnTile}
+                propertyColorMap={propertyColorMap}
+                playerColorMap={playerColorMap}/> 
         )
       })}
+      {/* Controls centered on the board */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+        <Controls gameState={gameState} setPrompt={setPrompt}/>
+      </div>
     </div>
   );
 };

@@ -86,10 +86,7 @@ func CreateRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
 	})
 }
 
-func JoinRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
-
-	fmt.Println("Joined room")
-	
+func JoinRoom(s *network.Server, sender *shared.Client, msg shared.Message) {	
 	data, ok := msg.Data.(map[string]interface{})
 	if !ok {
 		fmt.Println("Invalid message data format")
@@ -122,44 +119,52 @@ func JoinRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
 
 	playerId := sender.Id
 
-	if room, ok := s.Rooms[code]; ok {
-		// Room exists. Add them to it and let them know
-		room.PlayerIDs[playerId] = true
-
-		// Initialize new player
-		newPlayer := &shared.PlayerState{
-			ID:          playerId,
-			DisplayName: displayName,
-			Position:    0,
-			Money:       1500,
-			InJail:      false,
-		}
-		room.GameState.Players[playerId] = newPlayer
-
-		// Add to appropriate maps
-		room.GameState.TurnOrder = append(room.GameState.TurnOrder, playerId)
-		s.ClientToRoomCode[playerId] = code
-
-		// Show that a new id has been created
+	room, ok := s.Rooms[code];
+	
+	if !ok {
 		s.Signal(sender, shared.Message{
-			Type:   "new_id",
+			Type:   "room_joined_fail",
 			Sender: sender.Conn.RemoteAddr().String(),
-			Data:   playerId,
 		})
-
-		// broadcast gamestate to prepare for game start
-		s.BroadcastToRoom(room, shared.Message{
-			Type:   "game_state",
-			Sender: sender.Conn.RemoteAddr().String(),
-			Data:   room.GameState,
-		})
-
-		s.Signal(sender, shared.Message{
-			Type:   "room_joined",
-			Sender: sender.Conn.RemoteAddr().String(),
-			Data:   code,
-		})
+		return
 	}
+
+	// Room exists. Add them to it and let them know
+	room.PlayerIDs[playerId] = true
+
+	// Initialize new player
+	newPlayer := &shared.PlayerState{
+		ID:          playerId,
+		DisplayName: displayName,
+		Position:    0,
+		Money:       1500,
+		InJail:      false,
+	}
+	room.GameState.Players[playerId] = newPlayer
+
+	// Add to appropriate maps
+	room.GameState.TurnOrder = append(room.GameState.TurnOrder, playerId)
+	s.ClientToRoomCode[playerId] = code
+
+	// Show that a new id has been created
+	s.Signal(sender, shared.Message{
+		Type:   "new_id",
+		Sender: sender.Conn.RemoteAddr().String(),
+		Data:   playerId,
+	})
+
+	// broadcast gamestate to prepare for game start
+	s.BroadcastToRoom(room, shared.Message{
+		Type:   "game_state",
+		Sender: sender.Conn.RemoteAddr().String(),
+		Data:   room.GameState,
+	})
+
+	s.Signal(sender, shared.Message{
+		Type:   "room_joined",
+		Sender: sender.Conn.RemoteAddr().String(),
+		Data:   code,
+	})
 }
 
 func ColorSelected(s *network.Server, sender *shared.Client, msg shared.Message) {

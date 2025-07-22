@@ -11,15 +11,13 @@ func StartGame(s *network.Server, sender *shared.Client, msg shared.Message) {
 	if !ok {
 		return
 	}
-	// Need at least 2 players
-	if len(room.PlayerIDs) < 2 {
-		fmt.Println("Not enough players to start")
-		return
-	}
 
-	// This is the "party leader" for now
-	if room.GameState.TurnOrder[0] != sender.Id {
-		fmt.Println("Only room creator can start game")
+	// ERROR: Need at least 2 players. Only game creator can start
+	if len(room.PlayerIDs) < 2 || room.GameState.TurnOrder[0] != sender.Id {
+		s.Signal(sender, shared.Message{
+			Type:   "game_started_fail",
+			Sender: sender.Conn.RemoteAddr().String(),
+		})
 		return
 	}
 
