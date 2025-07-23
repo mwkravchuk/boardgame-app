@@ -1,7 +1,7 @@
 {
 
   "extends": "./tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "src/Dice.jsx"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

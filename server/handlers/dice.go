@@ -22,6 +22,12 @@ func Roll(s *network.Server, sender *shared.Client, msg shared.Message) {
 	player.HasRolled = true
 
 	s.BroadcastToRoom(room, shared.Message{
+		Type:   "dice_rolled",
+		Sender: displayName,
+		Data:   []int{d1, d2},
+	})
+
+	s.BroadcastToRoom(room, shared.Message{
 		Type:   "console",
 		Sender: displayName,
 		Data:   fmt.Sprintf("rolled %d & %d", d1, d2),

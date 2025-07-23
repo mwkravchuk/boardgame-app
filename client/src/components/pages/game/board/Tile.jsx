@@ -21,14 +21,12 @@ const propertyColorMap = {
 const Tile = ({ index, row, col, property, playersOnTile }) => {
   return (
     <div key={index}
-         className={`absolute w-[70px] h-[70px] border-t-[10px] border ${propertyColorMap[property?.color] || "border-slate-300"} flex text-sm flex-col text-center`}
+         className={`absolute w-[75px] h-[75px] border-t-[8px] border ${propertyColorMap[property?.color] || "border-slate-300"} flex text-sm flex-col justify-between text-center`}
          style={{
-            top: `${row * 70}px`,
-            left: `${col * 70}px`,}}>
+            top: `${row * 75}px`,
+            left: `${col * 75}px`,}}>
       {/* Property Name */}
-      {property?.name && (<div className="text-[8px] font-bold w-full">{property.name}</div>)}
-      {/* Property Price */}
-      {property?.price && (<div className="text-[8px]">{property.price}</div>)}
+      {property?.name && (<div className="text-[10px] font-bold mx-0.5">{property.name}</div>)}
       {/* Players on tile */}
       <div className={"flex flex-row gap-1"}>
         {playersOnTile.map((player) => (
@@ -38,6 +36,8 @@ const Tile = ({ index, row, col, property, playersOnTile }) => {
           </div>
         ))}
       </div>
+      {/* Property Price */}
+      {property?.price && (<div className="text-[10px]">{property.price}</div>)}
     </div>
   );
 };

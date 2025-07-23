@@ -21,7 +21,7 @@ const Board = ({ gameState, setPrompt }) => {
   };
 
   return (
-    <div className="relative grid grid-cols-11 grid-rows-11 w-[770px] h-[770px] bg-amber-50">
+    <div className="relative grid grid-cols-11 grid-rows-11 w-[825px] h-[825px] bg-amber-50">
       {tiles.map((_, index) => {
         const { row, col } = getTilePosition(index);
         const playersOnTile = gameState?.players ? Object.values(gameState.players).filter(p => p.position === index) : [];
