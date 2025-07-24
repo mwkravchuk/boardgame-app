@@ -5,7 +5,7 @@ import { usePlayer } from "../../../../contexts/PlayerProvider";
 import { Button } from "../../../ui/button";
 import Dice from "../../../Dice";
 
-const Controls = ({ gameState, setPrompt }) => {
+const Controls = ({ gameState, setPrompt, setAnimationCompleted }) => {
   const { addListener, removeListener, sendMessage } = useWebSocket();
   const { playerId } = usePlayer();
   const player = gameState.players?.[playerId];
@@ -26,8 +26,8 @@ const Controls = ({ gameState, setPrompt }) => {
 
   const handleTrade = () => {
     setPrompt({
-      type: "initiate_trade",
-      data: { displayName: player.displayName },
+      type: "trade",
+      data: { displayName: player.displayName, gameState, playerId },
     })
   };
 
@@ -53,8 +53,8 @@ const Controls = ({ gameState, setPrompt }) => {
 
   return (
     <div>
-      <Dice values={diceValues} onClick={handleRollDice}/>
-      <div className="flex flex-row gap-1">
+      <Dice values={diceValues} onClick={handleRollDice} setAnimationCompleted={setAnimationCompleted}/>
+      <div className="flex flex-row gap-1 justify-center">
         <Button disabled={!isMyTurn || hasRolled} onClick={handleRollDice}>ROLL DICE</Button>
         <Button disabled={!isMyTurn || !hasRolled} onClick={handleEndTurn}>END TURN</Button>
         <Button disabled={!isMyTurn} onClick={handleTrade}>TRADE</Button>

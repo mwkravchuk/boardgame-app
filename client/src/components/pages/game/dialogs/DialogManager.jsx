@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useWebSocket } from "../../../../contexts/WebSocketProvider";
 
 import BuyPropertyDialog from "./BuyProperty";
 import OweRentDialog from "./OweRent";
-import InitiateTradeDialog from "./InitiateTrade";
+import TradeDialog from "./Trade";
 import BankruptDialog from "./Bankrupt";
 
-const DialogManager = ({ gameState, playerId, prompt, setPrompt }) => {
+const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationCompleted }) => {
 
   const { sendMessage } = useWebSocket();
 
@@ -23,7 +23,7 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt }) => {
 
     // UNDER THESE CONDITIONS:
     // BUY PROPERTY 
-    if (tile && tile.isProperty && !tile.isOwned && player.position !== lastPromptedTileIndexRef.current) {
+    if (tile && tile.isProperty && !tile.isOwned && player.position !== lastPromptedTileIndexRef.current && animationCompleted) {
       console.log("we are on a property, set prompt.");
       setPrompt({
         type: "buy_property",
@@ -33,7 +33,7 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt }) => {
     }
 
     // OWE RENT
-    if (tile && tile.isProperty && tile.isOwned && tile.ownerId !== playerId && player.position !== lastPromptedTileIndexRef.current) {
+    if (tile && tile.isProperty && tile.isOwned && tile.ownerId !== playerId && player.position !== lastPromptedTileIndexRef.current && animationCompleted) {
       console.log("we are on a property owned by someone else. pay rent");
       setPrompt({
         type: "owe_rent",
@@ -42,7 +42,7 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt }) => {
       lastPromptedTileIndexRef.current = player.position;
     }
 
-  }, [gameState, playerId, isMyTurn, setPrompt]);
+  }, [gameState, playerId, isMyTurn, setPrompt, animationCompleted]);
 
   const closePrompt = () => setPrompt(null);
 
@@ -62,9 +62,9 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt }) => {
       return (
         <OweRentDialog {...dialogProps} />
       );
-    case "initiate_trade":
+    case "trade":
       return (
-        <InitiateTradeDialog {...dialogProps} />
+        <TradeDialog {...dialogProps} />
       )
     case "bankrupt":
       return (

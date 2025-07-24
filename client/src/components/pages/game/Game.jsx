@@ -17,12 +17,13 @@ const Game = () => {
 
   const { playerId } = usePlayer();
   const [prompt, setPrompt] = useState(null);
+  const [animationCompleted, setAnimationCompleted] = useState(false);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-4 flex-row">
-        <Board gameState={gameState} setPrompt={setPrompt}/>
-        <div className="flex flex-col p-4 gap-4 w-80 bg-amber-100 border-solid border-3 border-amber-300">
+    <div>
+      <div className="flex flex-row gap-4">
+        <Board gameState={gameState} setPrompt={setPrompt} setAnimationCompleted={setAnimationCompleted}/>
+        <div className="flex flex-col gap-4 p-4 w-80 bg-amber-100">
           <Console />
           <Separator className="bg-amber-300"/>
           <ChatBox />
@@ -30,7 +31,7 @@ const Game = () => {
           <PlayerInfo gameState={gameState} />
         </div>
       </div>
-      <DialogManager gameState={gameState} playerId={playerId} prompt={prompt} setPrompt={setPrompt}/>
+      <DialogManager gameState={gameState} playerId={playerId} prompt={prompt} setPrompt={setPrompt} animationCompleted={animationCompleted}/>
     </div>
   );
 };

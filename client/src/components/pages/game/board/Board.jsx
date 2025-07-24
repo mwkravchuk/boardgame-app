@@ -3,7 +3,7 @@ const BOARD_SIZE = 11; // 11 tiles per side
 import Controls from "./Controls";
 import Tile from "./Tile";
 
-const Board = ({ gameState, setPrompt }) => {
+const Board = ({ gameState, setPrompt, setAnimationCompleted }) => {
 
   const numTotalTiles = BOARD_SIZE * 4 - 4;
   const tiles = Array.from({ length: numTotalTiles }, (_, i) => `Tile ${i + 1}`);
@@ -21,7 +21,7 @@ const Board = ({ gameState, setPrompt }) => {
   };
 
   return (
-    <div className="relative grid grid-cols-11 grid-rows-11 w-[825px] h-[825px] bg-amber-50">
+    <div className="relative grid grid-cols-11 grid-rows-11 w-[792px] h-[792px] bg-amber-50">
       {tiles.map((_, index) => {
         const { row, col } = getTilePosition(index);
         const playersOnTile = gameState?.players ? Object.values(gameState.players).filter(p => p.position === index) : [];
@@ -37,7 +37,7 @@ const Board = ({ gameState, setPrompt }) => {
       })}
       {/* Controls centered on the board */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-        <Controls gameState={gameState} setPrompt={setPrompt}/>
+        <Controls gameState={gameState} setPrompt={setPrompt} setAnimationCompleted={setAnimationCompleted}/>
       </div>
     </div>
   );

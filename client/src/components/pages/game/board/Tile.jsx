@@ -21,10 +21,10 @@ const propertyColorMap = {
 const Tile = ({ index, row, col, property, playersOnTile }) => {
   return (
     <div key={index}
-         className={`absolute w-[75px] h-[75px] border-t-[8px] border ${propertyColorMap[property?.color] || "border-slate-300"} flex text-sm flex-col justify-between text-center`}
+         className={`absolute w-[72px] h-[72px] border-t-[8px] border ${propertyColorMap[property?.color] || "border-slate-300"} flex text-sm flex-col justify-between text-center`}
          style={{
-            top: `${row * 75}px`,
-            left: `${col * 75}px`,}}>
+            top: `${row * 72}px`,
+            left: `${col * 72}px`,}}>
       {/* Property Name */}
       {property?.name && (<div className="text-[10px] font-bold mx-0.5">{property.name}</div>)}
       {/* Players on tile */}

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import DiceBox from '@3d-dice/dice-box';
+import DiceBox from '@3d-dice/dice-box-threejs';
 
-export default function Dice({ values }) {
+export default function Dice({ values, setAnimationCompleted }) {
   const boxRef = useRef(null);
 
   useEffect(() => {
@@ -10,32 +10,31 @@ export default function Dice({ values }) {
         assetPath: '/assets/',
         scale: 5,
         gravity: 9.8,
-        startingHeight: 8,
+        startingHeight: 4,
+        onRollComplete: () => {
+          setAnimationCompleted(true);
+        }
       });
-      await diceBox.init();
+      await diceBox.initialize();
 
       boxRef.current = diceBox;
-
-      if (values && values.length) {
-        diceBox.roll("2d6");
-      }
     };
     init();
-  }, [values]);
+  }, [setAnimationCompleted]);
 
   useEffect(() => {
     if (boxRef.current && values?.length) {
-      boxRef.current.roll(values.map(v => `d6-${v}`));
+      setAnimationCompleted(false);
+      boxRef.current.roll(`2d6@${values[0]},${values[1]}`);
     };
-  }, [values]);
+  }, [values, setAnimationCompleted]);
 
   return (
     <div
       id="dice-box"
       style={{
-        width: '300px',
-        height: '300px',
-        border: `1px solid #ccc`,
+        width: '500px',
+        height: '500px',
         position: 'relative',
       }}>
     </div>
