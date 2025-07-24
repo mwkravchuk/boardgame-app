@@ -84,3 +84,7 @@ func PayRent(s *network.Server, sender *shared.Client, msg shared.Message) {
 func Bankrupt(s *network.Server, sender *shared.Client, msg shared.Message) {
 
 }
+
+func ProposeTrade(s *network.Server, sender *shared.Client, msg shared.Message) {
+	
+}
