@@ -39,6 +39,23 @@ func IsInValidRoom(s *network.Server, sender *shared.Client) (*shared.GameRoom, 
 	return room, true
 }
 
+// Helper for property transfer
+func transferProperties(props []int, from *shared.PlayerState, to *shared.PlayerState) {
+	for _, propID := range props {
+		// Remove from `from`
+		newOwned := []int{}
+		for _, p := range from.PropertiesOwned {
+			if p != propID {
+				newOwned = append(newOwned, p)
+			}
+		}
+		from.PropertiesOwned = newOwned
+
+		// Add to `to`
+		to.PropertiesOwned = append(to.PropertiesOwned, propID)
+	}
+}
+
 func InitializeProperties() []shared.Property {
 	properties := make([]shared.Property, 40)
 	properties[1] = shared.Property{

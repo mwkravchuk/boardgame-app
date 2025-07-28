@@ -55,17 +55,20 @@ func CreateRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
 		CurrentTurn: 0,
 		BoardState: make([]int, 40),
 		Properties: InitializeProperties(),
+		CurrentTrade: nil,
 	}
 
 	// Create room
 	room := &shared.GameRoom{
 		Code:      code,
-		PlayerIDs:   make(map[string]bool),
+		PlayerIDs: make(map[string]bool),
 		GameState: initialGameState,
+		Clients:   make(map[string]*shared.Client),
 	}
 
 	// Consider sender as first player to this game. Add to appropriate maps
 	room.PlayerIDs[sender.Id] = true
+	room.Clients[sender.Id] = sender
 	s.ClientToRoomCode[sender.Id] = code
 
 	// Add the room to the server's list of rooms
@@ -118,7 +121,6 @@ func JoinRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
 	}
 
 	playerId := sender.Id
-
 	room, ok := s.Rooms[code];
 	
 	if !ok {
@@ -131,6 +133,7 @@ func JoinRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
 
 	// Room exists. Add them to it and let them know
 	room.PlayerIDs[playerId] = true
+	room.Clients[sender.Id] = sender
 
 	// Initialize new player
 	newPlayer := &shared.PlayerState{
@@ -146,7 +149,7 @@ func JoinRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
 	room.GameState.TurnOrder = append(room.GameState.TurnOrder, playerId)
 	s.ClientToRoomCode[playerId] = code
 
-	// Show that a new id has been created
+	// Tell them that their id has been created
 	s.Signal(sender, shared.Message{
 		Type:   "new_id",
 		Sender: sender.Conn.RemoteAddr().String(),

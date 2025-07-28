@@ -24,6 +24,7 @@ var Registry = map[string]HandlerFunc{
 	"auction_property": AuctionProperty,
 	"pay_rent":         PayRent,
 	"propose_trade":    ProposeTrade,
+	"respond_to_trade": RespondToTrade,
 }
 
 // dispatcher --> sends message to corresponding function

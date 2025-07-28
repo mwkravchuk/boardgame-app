@@ -5,10 +5,11 @@ import BuyPropertyDialog from "./BuyProperty";
 import OweRentDialog from "./OweRent";
 import TradeDialog from "./Trade";
 import BankruptDialog from "./Bankrupt";
+import TradeOfferedDialog from "./TradeOffered";
 
 const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationCompleted }) => {
 
-  const { sendMessage } = useWebSocket();
+  const { addListener, removeListener, sendMessage } = useWebSocket();
 
   const lastPromptedTileIndexRef = useRef(null);
 
@@ -22,7 +23,7 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationComple
     const tile = gameState.properties?.[player.position];
 
     // UNDER THESE CONDITIONS:
-    // BUY PROPERTY 
+    // I CAN BUY THE PROPERTY
     if (tile && tile.isProperty && !tile.isOwned && player.position !== lastPromptedTileIndexRef.current && animationCompleted) {
       console.log("we are on a property, set prompt.");
       setPrompt({
@@ -32,7 +33,7 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationComple
       lastPromptedTileIndexRef.current = player.position;
     }
 
-    // OWE RENT
+    // I HAVE TO OWE RENT
     if (tile && tile.isProperty && tile.isOwned && tile.ownerId !== playerId && player.position !== lastPromptedTileIndexRef.current && animationCompleted) {
       console.log("we are on a property owned by someone else. pay rent");
       setPrompt({
@@ -43,6 +44,22 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationComple
     }
 
   }, [gameState, playerId, isMyTurn, setPrompt, animationCompleted]);
+
+  // A TRADE OFFER WAS SENT TO ME
+  useEffect(() => {
+    const handleTradeReceived = (message) => {
+      setPrompt({
+        type: "trade_offered",
+        data: message,
+      });
+    };
+
+    addListener("trade_offered", handleTradeReceived);
+
+    return () => {
+      removeListener("trade_offered", handleTradeReceived);
+    }
+  }, [addListener, removeListener, setPrompt]);
 
   const closePrompt = () => setPrompt(null);
 
@@ -69,6 +86,10 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationComple
     case "bankrupt":
       return (
         <BankruptDialog {...dialogProps}/>
+      )
+    case "trade_offered":
+      return (
+        <TradeOfferedDialog {...dialogProps}/>
       )
     default:
       return null;
