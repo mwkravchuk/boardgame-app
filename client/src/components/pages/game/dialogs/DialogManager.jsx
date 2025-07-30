@@ -10,9 +10,7 @@ import TradeOfferedDialog from "./TradeOffered";
 const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationCompleted }) => {
 
   const { addListener, removeListener, sendMessage } = useWebSocket();
-
   const lastPromptedTileIndexRef = useRef(null);
-
   const currentPlayerId = gameState.turnOrder[gameState.currentTurn];
   const isMyTurn = playerId === currentPlayerId;
 

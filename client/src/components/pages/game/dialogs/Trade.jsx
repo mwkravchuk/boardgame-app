@@ -13,18 +13,26 @@ import {
 } from "../../../ui/dialog"
 import { Button } from "../../../ui/button";
 
+import PropertyTradeSelector from "./PropertyTradeSelector";
+
 const TradeDialog = ({ open, close, prompt, sendMessage }) => {
   const [step, setStep] = useState(1);
   const [targetId, setTargetId] = useState(null);
   const playerId = prompt.data.playerId;
 
   const players = prompt.data.gameState.players;
+  const properties = prompt.data.gameState.properties;
   const otherPlayers = Object.values(players).filter(p => p.id !== playerId);
   const selfPlayer = players[playerId];
   const otherPlayer = otherPlayers.find((p) => p.id === targetId);
 
+  console.log("self player: ", selfPlayer);
+  console.log("other player: ", otherPlayer);
+
   const selfMoney = selfPlayer?.money;
   const theirMoney = otherPlayer?.money;
+  const selfProps = selfPlayer?.properties;
+  const theirProps = otherPlayer?.properties;
 
   const handlePlayerSelect = (id) => {
     setTargetId(id);
@@ -36,6 +44,8 @@ const TradeDialog = ({ open, close, prompt, sendMessage }) => {
       targetId,
       myOfferMoney,
       theirOfferMoney,
+      myOfferProps,
+      theirOfferProps,
     });
     close();
   };
@@ -43,6 +53,24 @@ const TradeDialog = ({ open, close, prompt, sendMessage }) => {
     // Step 2 state
   const [myOfferMoney, setMyOfferMoney] = useState(0);
   const [theirOfferMoney, setTheirOfferMoney] = useState(0);
+  const [myOfferProps, setMyOfferProps] = useState([]);
+  const [theirOfferProps, setTheirOfferProps] = useState([]);
+
+  const toggleMyOfferProps = (propertyIdx) => {
+    setMyOfferProps((prev) =>
+      prev.includes(propertyIdx)
+        ? prev.filter((i) => i !== propertyIdx)
+        : [...prev, propertyIdx]
+    );
+  };
+
+  const toggleTheirOfferProps = (propertyIdx) => {
+    setTheirOfferProps((prev) =>
+      prev.includes(propertyIdx)
+        ? prev.filter((i) => i !== propertyIdx)
+        : [...prev, propertyIdx]
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={close}>
@@ -80,28 +108,38 @@ const TradeDialog = ({ open, close, prompt, sendMessage }) => {
                 </DialogDescription>
               </DialogHeader>
 
-              {/* YOUR MONEY */}
-              <div className="mt-4">
-                <label>Your money offer: ${myOfferMoney}</label>
-                <input
-                  type="range"
-                  min="0"
-                  max={selfMoney}
-                  value={myOfferMoney}
-                  onChange={(e) => setMyOfferMoney(Number(e.target.value))}
-                />
-              </div>
+              <div className="flex flex-row">
+                {/* YOUR OFFER */}
+                <div className="mt-4">
+                  <label>Your money offer: ${myOfferMoney}</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max={selfMoney}
+                    value={myOfferMoney}
+                    onChange={(e) => setMyOfferMoney(Number(e.target.value))}/>
+                  <PropertyTradeSelector
+                    ownedIndices={selfProps}
+                    properties={properties}
+                    selectedIndices={myOfferProps}
+                    onToggle={toggleMyOfferProps}/>
+                </div>
 
-              {/* THEIR MONEY */}
-              <div className="mt-4">
-                <label>Their money offer: ${theirOfferMoney}</label>
-                <input
-                  type="range"
-                  min="0"
-                  max={theirMoney}
-                  value={theirOfferMoney}
-                  onChange={(e) => setTheirOfferMoney(Number(e.target.value))}
-                />
+                {/* THEIR STUFF YOU WANT */}
+                <div className="mt-4">
+                  <label>Their money offer: ${theirOfferMoney}</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max={theirMoney}
+                    value={theirOfferMoney}
+                    onChange={(e) => setTheirOfferMoney(Number(e.target.value))}/>
+                    <PropertyTradeSelector
+                    ownedIndices={theirProps}
+                    properties={properties}
+                    selectedIndices={theirOfferProps}
+                    onToggle={toggleTheirOfferProps}/>
+                </div>
               </div>
 
               <DialogFooter>
