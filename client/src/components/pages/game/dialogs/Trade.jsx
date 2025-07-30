@@ -13,7 +13,8 @@ import {
 } from "../../../ui/dialog"
 import { Button } from "../../../ui/button";
 
-import PropertyTradeSelector from "./PropertyTradeSelector";
+import PropertyTradeSelector from "./trading/PropertyTradeSelector";
+import PlayerSelectStep from "./trading/PlayerSelectStep";
 
 const TradeDialog = ({ open, close, prompt, sendMessage }) => {
   const [step, setStep] = useState(1);
@@ -33,11 +34,6 @@ const TradeDialog = ({ open, close, prompt, sendMessage }) => {
   const theirMoney = otherPlayer?.money;
   const selfProps = selfPlayer?.properties;
   const theirProps = otherPlayer?.properties;
-
-  const handlePlayerSelect = (id) => {
-    setTargetId(id);
-    setStep(2);
-  };
 
   const handlePropose = () => {
     sendMessage("propose_trade", {
@@ -78,25 +74,13 @@ const TradeDialog = ({ open, close, prompt, sendMessage }) => {
         <DialogOverlay/>
         <DialogContent>
           {step === 1 && (
-            <>
-              <DialogHeader>
-                <DialogTitle>Choose a player to trade with</DialogTitle>
-                <DialogDescription>
-                  {otherPlayers.map(player => (
-                    <Button key={player.id} onClick={() => handlePlayerSelect(player.id)}>
-                      {player.displayName}
-                    </Button>
-                  ))}
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="ghost">Cancel</Button>
-                </DialogClose>
-              </DialogFooter>
-            </>
+            <PlayerSelectStep otherPlayers={otherPlayers}
+                              onSelect={(id) => {
+                                setTargetId(id);
+                                setStep(2);
+                              }}
+                              onCancel={close} />
           )}
-
           {step === 2 && (
             <>
               <DialogHeader>
