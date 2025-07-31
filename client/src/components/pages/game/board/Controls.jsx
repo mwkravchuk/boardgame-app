@@ -28,7 +28,7 @@ const Controls = ({ gameState, setPrompt, setAnimationCompleted }) => {
   const handleTrade = () => {
     setPrompt({
       type: "trade",
-      data: { displayName: player.displayName, gameState, playerId },
+      data: { gameState, playerId, displayName: player.displayName },
     })
   };
 
@@ -36,6 +36,13 @@ const Controls = ({ gameState, setPrompt, setAnimationCompleted }) => {
     setPrompt({
       type: "bankrupt",
       data: { displayName: player.displayName },
+    })
+  };
+
+  const handleManageProperties = () => {
+    setPrompt({
+      type: "manage_properties",
+      data: { gameState, playerId, displayName: player.displayName },
     })
   };
 
@@ -60,6 +67,7 @@ const Controls = ({ gameState, setPrompt, setAnimationCompleted }) => {
         <Button disabled={!isMyTurn || !hasRolled} onClick={handleEndTurn}>END TURN</Button>
         <Button disabled={!isMyTurn} onClick={handleTrade}>TRADE</Button>
         <Button disabled={!isMyTurn} onClick={handleBankrupt}>BANKRUPT</Button>
+        <Button disabled={!isMyTurn} onClick={handleManageProperties}>MANAGE PROPERTIES</Button>
       </div>
       <DebugControls />
     </div>

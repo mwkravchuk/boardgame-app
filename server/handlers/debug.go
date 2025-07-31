@@ -44,6 +44,4 @@ func DebugGiveProperty(s *network.Server, sender *shared.Client, msg shared.Mess
 		Sender: sender.Conn.RemoteAddr().String(),
 		Data:   room.GameState,
 	})
-
-	// rest of the logic
 }

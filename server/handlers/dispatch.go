@@ -26,6 +26,9 @@ var Registry = map[string]HandlerFunc{
 	"bankrupt":         Bankrupt,
 	"propose_trade":    ProposeTrade,
 	"respond_to_trade": RespondToTrade,
+	"buy_house":        BuyHouse,
+	"sell_house":       SellHouse,
+	"toggle_mortgage":  ToggleMortgage,
 
 	"debug_give_property": DebugGiveProperty,
 }

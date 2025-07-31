@@ -6,6 +6,7 @@ import OweRentDialog from "./OweRent";
 import TradeDialog from "./Trade";
 import BankruptDialog from "./Bankrupt";
 import TradeOfferedDialog from "./TradeOffered";
+import ManagePropertiesDialog from "./ManageProperties";
 
 const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationCompleted }) => {
 
@@ -20,7 +21,7 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationComple
     if (!player) return;
     const tile = gameState.properties?.[player.position];
 
-    // UNDER THESE CONDITIONS:
+    // FORCED DIALOGS
     // I CAN BUY THE PROPERTY
     if (tile && tile.isProperty && !tile.isOwned && player.position !== lastPromptedTileIndexRef.current && animationCompleted) {
       console.log("we are on a property, set prompt.");
@@ -90,6 +91,10 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationComple
     case "trade_offered":
       return (
         <TradeOfferedDialog {...dialogProps}/>
+      )
+    case "manage_properties":
+      return (
+        <ManagePropertiesDialog {...dialogProps}/>
       )
     default:
       return null;

@@ -52,6 +52,7 @@ type Property struct {
 	IsProperty  bool   `json:"isProperty"`
 	IsOwned     bool   `json:"isOwned"`
 	Color       string `json:"color"`
+	NumHouses   int    `json:"numHouses"`
 	IsMortgaged bool   `json:"isMortgaged"`
 }
 
