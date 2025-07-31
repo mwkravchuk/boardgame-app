@@ -14,13 +14,15 @@ type Server struct {
 	ClientToRoomCode map[string]string    			 // clientId -> roomCode
 	Rooms            map[string]*shared.GameRoom // roomCode -> room
 	ClientsMutex     sync.RWMutex
+	DebugMode        bool
 }
 
-func NewServer() *Server {
+func NewServer(debug bool) *Server {
 	return &Server{ConnectedIds:     make(map[string]bool),
 								 ClientsById:      make(map[string]*shared.Client),
 								 ClientToRoomCode: make(map[string]string),
 								 Rooms:            make(map[string]*shared.GameRoom),
+								 DebugMode:        debug,
 								}
 }
 

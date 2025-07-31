@@ -4,6 +4,7 @@ import { usePlayer } from "../../../../contexts/PlayerProvider";
 
 import { Button } from "../../../ui/button";
 import Dice from "../../../Dice";
+import DebugControls from "./DebugControls";
 
 const Controls = ({ gameState, setPrompt, setAnimationCompleted }) => {
   const { addListener, removeListener, sendMessage } = useWebSocket();
@@ -60,6 +61,7 @@ const Controls = ({ gameState, setPrompt, setAnimationCompleted }) => {
         <Button disabled={!isMyTurn} onClick={handleTrade}>TRADE</Button>
         <Button disabled={!isMyTurn} onClick={handleBankrupt}>BANKRUPT</Button>
       </div>
+      <DebugControls />
     </div>
   );
 };

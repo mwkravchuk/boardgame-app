@@ -20,10 +20,12 @@ func Chat(s *network.Server, sender *shared.Client, msg shared.Message) {
 
 func Console(s *network.Server, sender *shared.Client, msg shared.Message) {
 	room, ok := IsInValidRoom(s, sender)
-	displayName := room.GameState.Players[sender.Id].DisplayName
 	if !ok {
 		return
 	}
+
+	displayName := room.GameState.Players[sender.Id].DisplayName
+
 	s.BroadcastToRoom(room, shared.Message{
 		Type:   "console",
 		Sender: displayName,

@@ -1,22 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Dialog, DialogPortal, DialogOverlay, DialogContent } from "../../../ui/dialog"
 
-import {
-  Dialog,
-  DialogPortal,
-  DialogOverlay,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from "../../../ui/dialog"
-import { Button } from "../../../ui/button";
-
-import PropertyTradeSelector from "./trading/PropertyTradeSelector";
 import PlayerSelectStep from "./trading/PlayerSelectStep";
+import TradeFormStep from "./trading/TradeFormStep";
 
-const TradeDialog = ({ open, close, prompt, sendMessage }) => {
+const TradeDialog = ({ open, close, prompt, addListener, removeListener, sendMessage }) => {
   const [step, setStep] = useState(1);
   const [targetId, setTargetId] = useState(null);
   const playerId = prompt.data.playerId;
@@ -27,46 +15,23 @@ const TradeDialog = ({ open, close, prompt, sendMessage }) => {
   const selfPlayer = players[playerId];
   const otherPlayer = otherPlayers.find((p) => p.id === targetId);
 
-  console.log("self player: ", selfPlayer);
-  console.log("other player: ", otherPlayer);
+  console.log("step: ", step)
 
-  const selfMoney = selfPlayer?.money;
-  const theirMoney = otherPlayer?.money;
-  const selfProps = selfPlayer?.properties;
-  const theirProps = otherPlayer?.properties;
+  useEffect(() => {
+    const handleAccepted = () => {
+      // do stuff maybe
+      close();
+    };
+    const handleRejected = () => {
+      // do stuff maybe
+      close();
+    };
 
-  const handlePropose = () => {
-    sendMessage("propose_trade", {
-      targetId,
-      myOfferMoney,
-      theirOfferMoney,
-      myOfferProps,
-      theirOfferProps,
-    });
-    close();
-  };
+    addListener("trade_accepted", handleAccepted);
+    addListener("trade_rejected", handleRejected);
 
-    // Step 2 state
-  const [myOfferMoney, setMyOfferMoney] = useState(0);
-  const [theirOfferMoney, setTheirOfferMoney] = useState(0);
-  const [myOfferProps, setMyOfferProps] = useState([]);
-  const [theirOfferProps, setTheirOfferProps] = useState([]);
+  }, [addListener, removeListener, close]);
 
-  const toggleMyOfferProps = (propertyIdx) => {
-    setMyOfferProps((prev) =>
-      prev.includes(propertyIdx)
-        ? prev.filter((i) => i !== propertyIdx)
-        : [...prev, propertyIdx]
-    );
-  };
-
-  const toggleTheirOfferProps = (propertyIdx) => {
-    setTheirOfferProps((prev) =>
-      prev.includes(propertyIdx)
-        ? prev.filter((i) => i !== propertyIdx)
-        : [...prev, propertyIdx]
-    );
-  };
 
   return (
     <Dialog open={open} onOpenChange={close}>
@@ -82,57 +47,20 @@ const TradeDialog = ({ open, close, prompt, sendMessage }) => {
                               onCancel={close} />
           )}
           {step === 2 && (
-            <>
-              <DialogHeader>
-                <DialogTitle>
-                  Trading with {otherPlayer.displayName}
-                </DialogTitle>
-                <DialogDescription>
-                  Select properties and money to offer/request.
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="flex flex-row">
-                {/* YOUR OFFER */}
-                <div className="mt-4">
-                  <label>Your money offer: ${myOfferMoney}</label>
-                  <input
-                    type="range"
-                    min="0"
-                    max={selfMoney}
-                    value={myOfferMoney}
-                    onChange={(e) => setMyOfferMoney(Number(e.target.value))}/>
-                  <PropertyTradeSelector
-                    ownedIndices={selfProps}
-                    properties={properties}
-                    selectedIndices={myOfferProps}
-                    onToggle={toggleMyOfferProps}/>
-                </div>
-
-                {/* THEIR STUFF YOU WANT */}
-                <div className="mt-4">
-                  <label>Their money offer: ${theirOfferMoney}</label>
-                  <input
-                    type="range"
-                    min="0"
-                    max={theirMoney}
-                    value={theirOfferMoney}
-                    onChange={(e) => setTheirOfferMoney(Number(e.target.value))}/>
-                    <PropertyTradeSelector
-                    ownedIndices={theirProps}
-                    properties={properties}
-                    selectedIndices={theirOfferProps}
-                    onToggle={toggleTheirOfferProps}/>
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button onClick={handlePropose}>Propose Trade</Button>
-                <DialogClose asChild>
-                  <Button variant="ghost">Cancel</Button>
-                </DialogClose>
-              </DialogFooter>
-            </>
+            <TradeFormStep selfPlayer={selfPlayer}
+                           otherPlayer={otherPlayer}
+                           targetId={targetId}
+                           setStep={setStep}
+                           properties={properties}
+                           close={close}
+                           sendMessage={sendMessage}
+                           />
+          )}
+          {step === 3 && (
+            <div>
+              <span>Waiting on a response!</span>
+              <div className="w-8 h-8 border-4 boder-gray-300 border-t-blue-500 rounded-full animate-spin"></div>            
+            </div>
           )}
         </DialogContent>
       </DialogPortal>
