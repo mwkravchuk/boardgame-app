@@ -21,7 +21,7 @@ const propertyColorMap = {
 const Tile = ({ index, row, col, property, playersOnTile }) => {
   return (
     <div key={index}
-         className={`absolute w-[72px] h-[72px] border-t-[8px] border ${propertyColorMap[property?.color] || "border-slate-300"} flex text-sm flex-col justify-between text-center`}
+         className={`absolute w-[72px] h-[72px] border-t-[8px] border ${propertyColorMap[property?.color] || "border-slate-300"} flex text-sm flex-col justify-between text-center ${property?.isMortgaged ? "bg-slate-500": ""}`}
          style={{
             top: `${row * 72}px`,
             left: `${col * 72}px`,}}>

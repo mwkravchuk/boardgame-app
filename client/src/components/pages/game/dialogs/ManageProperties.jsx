@@ -13,8 +13,8 @@ import { Button } from "../../../../components/ui/button";
 
 import PropertyManager from "./properties/PropertyManager";
 
-const ManagePropertiesDialog = ({ open, close, prompt, sendMessage }) => {
-  const { playerId, gameState } = prompt.data;
+const ManagePropertiesDialog = ({ open, close, gameState, prompt, sendMessage }) => {
+  const { playerId } = prompt.data;
   const player = gameState.players[playerId];
   const properties = gameState.properties;
 
@@ -33,6 +33,7 @@ const ManagePropertiesDialog = ({ open, close, prompt, sendMessage }) => {
               <PropertyManager
                 key={propIdx}
                 property={properties[propIdx]}
+                propertyIdx={propIdx}
                 sendMessage={sendMessage}
               />
             ))}

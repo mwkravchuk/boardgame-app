@@ -65,6 +65,7 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationComple
   const dialogProps = {
     open: true,
     close: closePrompt,
+    gameState,
     prompt,
     addListener,
     removeListener,

@@ -1,18 +1,18 @@
 import { Button } from "../../../../ui/button";
 
-const PropertyManager = ({ property, sendMessage }) => {
+const PropertyManager = ({ property, propertyIdx, sendMessage }) => {
   const { name, numHouses, isMortgaged } = property;
 
   const handleBuyHouse = () => {
-    sendMessage("buy_house", property.index);
+    sendMessage("buy_house", propertyIdx);
   };
 
   const handleSellHouse = () => {
-    sendMessage("sell_house", property.index);
+    sendMessage("sell_house", propertyIdx);
   };
 
   const handleToggleMortgage = () => {
-    sendMessage("toggle_mortgage", property.index);
+    sendMessage("toggle_mortgage", propertyIdx);
   };
 
   return (

@@ -42,7 +42,7 @@ const Controls = ({ gameState, setPrompt, setAnimationCompleted }) => {
   const handleManageProperties = () => {
     setPrompt({
       type: "manage_properties",
-      data: { gameState, playerId, displayName: player.displayName },
+      data: { playerId, displayName: player.displayName },
     })
   };
 
