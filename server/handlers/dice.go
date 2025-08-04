@@ -17,6 +17,7 @@ func Roll(s *network.Server, sender *shared.Client, msg shared.Message) {
 
 	d1, d2 := rand.Intn(6) + 1, rand.Intn(6) + 1
 	totalDice := d1 + d2
+	room.GameState.LastRoll = totalDice
 	player := room.GameState.Players[sender.Id]
 	player.Position = (player.Position + totalDice) % 40
 	player.HasRolled = true

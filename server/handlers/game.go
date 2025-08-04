@@ -64,15 +64,20 @@ func PayRent(s *network.Server, sender *shared.Client, msg shared.Message) {
 		return
 	}
 
-	playerId := sender.Id
-	player := room.GameState.Players[playerId]
+	player := room.GameState.Players[sender.Id]
 	propertyIndex := player.Position
 	property := &room.GameState.Properties[propertyIndex]
-	propertyOwner := room.GameState.Players[property.OwnerID]
 
-	// send money to deserved player
-	player.Money -= property.Rent
-	propertyOwner.Money += property.Rent
+	if property.OwnerID == "" || property.OwnerID == sender.Id {
+		return
+	}
+
+	propertyOwner := room.GameState.Players[property.OwnerID]
+	rent := CalculateRent(propertyOwner, propertyIndex, room.GameState)
+
+	// Send the money
+	player.Money -= rent
+	propertyOwner.Money += rent
 
 	s.BroadcastToRoom(room, shared.Message{
 		Type:   "game_state",

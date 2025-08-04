@@ -31,6 +31,8 @@ type GameState struct {
 	BoardState   []int 									 `json:"boardState"`
 	Properties   []Property							 `json:"properties"`
 	CurrentTrade *TradeOffer             `json:"tradeOffer"`
+	ColorGroups  map[string][]int        `json:"colorGroups"` // "brown" -> {1, 3}
+	LastRoll     int                     `json:"lastRoll"`
 }
 
 type PlayerState struct {
@@ -46,14 +48,16 @@ type PlayerState struct {
 
 type Property struct {
 	Name 				string `json:"name"`
+	Color       string `json:"color"`
 	Price 	    int    `json:"price"`
-	Rent        int		 `json:"rent"`
-	OwnerID     string `json:"ownerId"`
+	DefaultRent int		 `json:"defaultRent"`
 	IsProperty  bool   `json:"isProperty"`
 	IsOwned     bool   `json:"isOwned"`
-	Color       string `json:"color"`
 	NumHouses   int    `json:"numHouses"`
+  RentStages  []int  `json:"rentStages"` // rent for 0, 1, ..., 5 houses
+	HouseCost   int    `json:"houseCost"`
 	IsMortgaged bool   `json:"isMortgaged"`
+	OwnerID     string `json:"ownerId"`
 }
 
 type ProposeTradePayload struct {

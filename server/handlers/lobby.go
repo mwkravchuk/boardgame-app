@@ -51,11 +51,13 @@ func CreateRoom(s *network.Server, sender *shared.Client, msg shared.Message) {
 		Players: map[string]*shared.PlayerState{
 			playerId: initialPlayerState,
 		},
-		TurnOrder: []string{playerId},
-		CurrentTurn: 0,
-		BoardState: make([]int, 40),
-		Properties: InitializeProperties(),
+		TurnOrder:    []string{playerId},
+		CurrentTurn:  0,
+		BoardState:   make([]int, 40),
+		Properties:   InitializeProperties(),
 		CurrentTrade: nil,
+		ColorGroups:  InitializeColorGroups(),
+		LastRoll:     0,
 	}
 
 	// Create room
