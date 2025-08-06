@@ -13,65 +13,18 @@ func BuyHouse(s *network.Server, sender *shared.Client, msg shared.Message) {
 	}
 
 	propertyIdx := int(msg.Data.(float64))
-
 	player := room.GameState.Players[sender.Id]
-	if !ownsProperty(player, propertyIdx) {
-    fmt.Println("Player does not own property")
-    return
-	}
 
-	property := &room.GameState.Properties[propertyIdx]
-	if property.IsMortgaged {
-    fmt.Println("Cannot build on mortgaged property")
-    return
-	}
-
-	// Must own full color set
-	color := property.Color
-	ownsAll := true
-	for i, p := range room.GameState.Properties {
-		if p.Color == color && !ownsProperty(player, i) {
-			ownsAll = false
-			break
-		}
-	}
-	if !ownsAll {
-		fmt.Println("Player does not own full monopoly")
-		return
-	}
-
-	// Balanced building check
-	var groupProps []*shared.Property
-	for i := range room.GameState.Properties {
-		if room.GameState.Properties[i].Color == color {
-			groupProps = append(groupProps, &room.GameState.Properties[i])
-		}
-	}
-
-	minHouses := groupProps[0].NumHouses
-	for _, gp := range groupProps {
-		if gp.NumHouses < minHouses {
-			minHouses = gp.NumHouses
-		}
-	}
-
-	if property.NumHouses > minHouses {
-		fmt.Println("Cannot build here; must build evenly")
-		return
-	}
-
-	// Funds check
-	if player.Money < property.HouseCost {
-		fmt.Println("Not enough money")
+	okToBuild, reason := CanBuildHouse(room.GameState, propertyIdx, player)
+	if !okToBuild {
+		fmt.Println("Cannot build house: ", reason)
 		return
 	}
 
 	// Apply purchase
+	property := &room.GameState.Properties[propertyIdx]
   player.Money -= property.HouseCost
   property.NumHouses++
-
-	// TO DO CALCULATE RENT SOMEHOW>
-  //property.CurrentRent = property.RentStages[property.NumHouses] // assume RentStages exists
 
 	s.BroadcastToRoom(room, shared.Message{
 		Type: "game_state",
@@ -86,7 +39,19 @@ func SellHouse(s *network.Server, sender *shared.Client, msg shared.Message) {
 		return
 	}
 
-	//propertyIdx := int(msg.Data.(float64))
+	propertyIdx := int(msg.Data.(float64))
+	player := room.GameState.Players[sender.Id]
+
+	okToSellHouse, reason := CanSellHouse(room.GameState, propertyIdx, player)
+	if !okToSellHouse {
+		fmt.Println("Cannot sell house: ", reason)
+		return
+	}
+
+	// Apply purchase
+	property := &room.GameState.Properties[propertyIdx]
+  player.Money += property.HouseCost / 2
+	property.NumHouses--
 
 	s.BroadcastToRoom(room, shared.Message{
 		Type: "game_state",
@@ -188,29 +153,82 @@ func CalculateRent(player *shared.PlayerState, propertyIdx int, gameState *share
 	}
 }
 
-func ownsProperty(player *shared.PlayerState, propertyIdx int) bool {
-	for _, idx := range player.PropertiesOwned {
-		if idx == propertyIdx {
-			return true
+func CanBuildHouse(game *shared.GameState, propertyIdx int, player *shared.PlayerState) (bool, string) {
+	property := game.Properties[propertyIdx]
+
+	// Must own property
+	if !ownsProperty(player, propertyIdx) {
+		return false, "Player does not own property"
+	}
+
+	// Property cannot be mortgaged
+	if property.IsMortgaged {
+		return false, "Cannot build on mortgaged property"
+	}
+
+	// Must own monopoly
+	if !ownsMonopoly(game, player, property.Color) {
+		return false, "Cannot build; you don't own the full set"
+	}
+
+	// Cannot exceed 5 houses
+	if property.NumHouses >= 5 {
+		return false, "Cannot build more than 5 houses (hotel)"
+	}
+
+	// Must have enough money
+	if player.Money < property.HouseCost {
+		return false, "Not enough money to buy house"
+	}
+
+	// Even building rule
+	group := game.ColorGroups[property.Color]
+	minHouses := game.Properties[group[0]].NumHouses
+	for _, idx := range group {
+		if game.Properties[idx].NumHouses < minHouses {
+			minHouses = game.Properties[idx].NumHouses
 		}
 	}
-	return false
+
+	if property.NumHouses > minHouses {
+		return false, "Must build evenly across properties"
+	}
+
+	return true, ""
 }
 
-func ownsMonopoly(game *shared.GameState, player *shared.PlayerState, color string) bool {
-	// Get the property indices for this color group
-	group, exists := game.ColorGroups[color]
-	if !exists {
-		return false
+func CanSellHouse(game *shared.GameState, propertyIdx int, player *shared.PlayerState) (bool, string) {
+	property := game.Properties[propertyIdx]
+
+	if !ownsProperty(player, propertyIdx) {
+		return false, "Player does not own property"
 	}
 
-	// Check that player owns all properties in the group
-	for _, propertyIdx := range group {
-		if !ownsProperty(player, propertyIdx) {
-			return false
+	if property.IsMortgaged {
+		return false, "Cannot sell house on mortgaged property"
+	}
+
+	if !ownsMonopoly(game, player, property.Color) {
+		return false, "Cannot build; you don't own the full set"
+	}
+
+	if property.NumHouses == 0 {
+		return false, "No houses to sell"
+	}
+
+	// Even selling rule
+	group := game.ColorGroups[property.Color]
+	maxHouses := game.Properties[group[0]].NumHouses
+	for _, idx := range group {
+		if game.Properties[idx].NumHouses > maxHouses {
+			maxHouses = game.Properties[idx].NumHouses
 		}
 	}
 
-	return true
+	if property.NumHouses < maxHouses {
+		return false, "Must sell houses evenly across properties"
+	}
+
+	return true, ""
 }
 

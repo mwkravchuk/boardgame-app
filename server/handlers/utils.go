@@ -56,6 +56,32 @@ func transferProperties(props []int, from *shared.PlayerState, to *shared.Player
 	}
 }
 
+func ownsProperty(player *shared.PlayerState, propertyIdx int) bool {
+	for _, idx := range player.PropertiesOwned {
+		if idx == propertyIdx {
+			return true
+		}
+	}
+	return false
+}
+
+func ownsMonopoly(gameState *shared.GameState, player *shared.PlayerState, color string) bool {
+	// Get the property indices for this color group
+	group, exists := gameState.ColorGroups[color]
+	if !exists {
+		return false
+	}
+
+	// Check that player owns all properties in the group
+	for _, propertyIdx := range group {
+		if !ownsProperty(player, propertyIdx) {
+			return false
+		}
+	}
+
+	return true
+}
+
 func InitializeProperties() []shared.Property {
 	properties := make([]shared.Property, 40)
 	properties[1] = shared.Property{
