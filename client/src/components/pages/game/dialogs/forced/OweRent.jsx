@@ -8,12 +8,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "../../../../components/ui/dialog"
-import { Button } from "../../../../components/ui/button";
+} from "../../../../ui/dialog"
+import { Button } from "../../../../ui/button";
 
 const OweRentDialog = ({ open, close, prompt, sendMessage }) => {
 
-  const property = prompt.data.property;
+  const { rent, displayName } = prompt.data;
 
   const handlePayRent = () => {
     sendMessage("pay_rent", null);
@@ -26,9 +26,9 @@ const OweRentDialog = ({ open, close, prompt, sendMessage }) => {
         <DialogOverlay/>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{prompt.data.displayName}</DialogTitle>
+            <DialogTitle>{displayName}</DialogTitle>
             <DialogDescription>
-              This property is owned. You must pay ${property.rent}.
+              This property is owned. You must pay ${rent}.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

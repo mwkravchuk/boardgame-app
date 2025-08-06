@@ -8,12 +8,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "../../../../components/ui/dialog"
-import { Button } from "../../../../components/ui/button";
+} from "../../../../ui/dialog"
+import { Button } from "../../../../ui/button";
 
 const BuyPropertyDialog = ({ open, close, prompt, sendMessage }) => {
 
-  const property = prompt.data.property;
+  const { property } = prompt.data;
 
   const handleBuy = () => {
     sendMessage("buy_property", null);

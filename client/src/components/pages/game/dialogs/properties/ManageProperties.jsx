@@ -8,10 +8,10 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "../../../../components/ui/dialog"
-import { Button } from "../../../../components/ui/button";
+} from "../../../../ui/dialog"
+import { Button } from "../../../../ui/button";
 
-import PropertyManager from "./properties/PropertyManager";
+import PropertyManager from "./PropertyManager";
 
 const ManagePropertiesDialog = ({ open, close, gameState, prompt, sendMessage }) => {
   const { playerId } = prompt.data;

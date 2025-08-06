@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogPortal, DialogOverlay, DialogContent } from "../../../ui/dialog"
+import { Dialog, DialogPortal, DialogOverlay, DialogContent } from "../../../../ui/dialog"
 
-import PlayerSelectStep from "./trading/PlayerSelectStep";
-import TradeFormStep from "./trading/TradeFormStep";
+import PlayerSelectStep from "./PlayerSelectStep";
+import TradeFormStep from "./TradeFormStep";
 
 const TradeDialog = ({ open, close, prompt, addListener, removeListener, sendMessage }) => {
   const [step, setStep] = useState(1);

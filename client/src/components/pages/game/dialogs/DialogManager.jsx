@@ -1,64 +1,72 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useWebSocket } from "../../../../contexts/WebSocketProvider";
 
-import BuyPropertyDialog from "./BuyProperty";
-import OweRentDialog from "./OweRent";
-import TradeDialog from "./Trade";
+import BuyPropertyDialog from "./forced/BuyProperty";
+import OweRentDialog from "./forced/OweRent";
+import TradeDialog from "./trading/Trade";
 import BankruptDialog from "./Bankrupt";
-import TradeOfferedDialog from "./TradeOffered";
-import ManagePropertiesDialog from "./ManageProperties";
+import TradeOfferedDialog from "./trading/TradeOffered";
+import ManagePropertiesDialog from "./properties/ManageProperties";
 
-const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationCompleted }) => {
+const DialogManager = ({ gameState, prompt, setPrompt, animationCompleted }) => {
 
   const { addListener, removeListener, sendMessage } = useWebSocket();
-  const lastPromptedTileIndexRef = useRef(null);
-  const currentPlayerId = gameState.turnOrder[gameState.currentTurn];
-  const isMyTurn = playerId === currentPlayerId;
+  const [pendingMessage, setPendingMessage] = useState(null);
 
+  // set dialog prompt based on state received from backend
   useEffect(() => {
-    if (!gameState || !playerId || !isMyTurn) return;
-    const player = gameState.players?.[playerId];
-    if (!player) return;
-    const tile = gameState.properties?.[player.position];
-
-    // FORCED DIALOGS
-    // I CAN BUY THE PROPERTY
-    if (tile && tile.isProperty && !tile.isOwned && player.position !== lastPromptedTileIndexRef.current && animationCompleted) {
-      console.log("we are on a property, set prompt.");
-      setPrompt({
-        type: "buy_property",
-        data: { property: tile },
-      });
-      lastPromptedTileIndexRef.current = player.position;
-    }
-
-    // I HAVE TO OWE RENT
-    if (tile && tile.isProperty && tile.isOwned && tile.ownerId !== playerId && player.position !== lastPromptedTileIndexRef.current && animationCompleted) {
-      console.log("we are on a property owned by someone else. pay rent");
-      setPrompt({
+    const handleOweRent = (message) => {
+      setPendingMessage({
         type: "owe_rent",
-        data: { property: tile, displayName: player.displayName },
-      })
-      lastPromptedTileIndexRef.current = player.position;
-    }
-
-  }, [gameState, playerId, isMyTurn, setPrompt, animationCompleted]);
-
-  // A TRADE OFFER WAS SENT TO ME
-  useEffect(() => {
-    const handleTradeReceived = (message) => {
-      setPrompt({
-        type: "trade_offered",
-        data: message,
+        data: {
+          rent: message.data.rent,
+          displayName: message.data.displayName,
+        },
       });
     };
 
+    const handleCanBuyProperty = (message) => {
+      setPendingMessage({
+        type: "can_buy_property",
+        data: {
+          property: message.data.property,
+        }
+      });
+    };
+
+    const handleTradeReceived = (message) => {
+      /* setPrompt over setPendingmessage
+         since it is weird behavior if the dice hasnt been rolled */
+      setPrompt({
+        type: "trade_offered",
+        data: {
+          fromPlayer:   message.data.fromPlayer,
+          offerMoney:   message.data.offerMoney,
+          requestMoney: message.data.requestMoney,
+          offerProps:   message.data.offerProps,
+          requestProps: message.data.requestProps,
+        },
+      });
+    };
+
+    addListener("owe_rent", handleOweRent);
+    addListener("can_buy_property", handleCanBuyProperty);
     addListener("trade_offered", handleTradeReceived);
 
     return () => {
+      removeListener("owe_rent", handleOweRent);
+      removeListener("can_buy_property", handleCanBuyProperty);
       removeListener("trade_offered", handleTradeReceived);
     }
   }, [addListener, removeListener, setPrompt]);
+
+  // Show FORCED DIALOGS when animation completes
+  useEffect(() => {
+    if (animationCompleted && pendingMessage) {
+      setPrompt(pendingMessage);
+      setPendingMessage(null);
+    }
+  }, [animationCompleted, pendingMessage, setPrompt]);
 
   const closePrompt = () => setPrompt(null);
 
@@ -73,7 +81,7 @@ const DialogManager = ({ gameState, playerId, prompt, setPrompt, animationComple
   };
 
   switch (prompt?.type) {
-    case "buy_property":
+    case "can_buy_property":
       return (
         <BuyPropertyDialog {...dialogProps}/>
       );

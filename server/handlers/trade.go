@@ -69,7 +69,7 @@ func ProposeTrade(s *network.Server, sender *shared.Client, msg shared.Message) 
 	s.Signal(targetPlayer, shared.Message{
 		Type: "trade_offered",
 		Data: map[string]interface{}{
-			"fromPlayerId": sender.Id,
+			"fromPlayer":   senderPlayer.DisplayName,
 			"offerMoney":   payload.MyOfferMoney,
 			"requestMoney": payload.TheirOfferMoney,
 			"offerProps":   payload.MyOfferProps,

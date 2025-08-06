@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import {
   Dialog,
   DialogPortal,
@@ -10,12 +8,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "../../../ui/dialog"
-import { Button } from "../../../ui/button";
+} from "../../../../ui/dialog"
+import { Button } from "../../../../ui/button";
 
 const TradeOfferedDialog = ({ open, close, prompt, sendMessage }) => {
 
-  console.log("data sent to me: ", prompt.data);
+  const { fromPlayer, offerMoney, requestMoney, offerProps, requestProps } = prompt.data;
 
   const handleAccept = () => {
     sendMessage("respond_to_trade", "accept");
@@ -33,8 +31,9 @@ const TradeOfferedDialog = ({ open, close, prompt, sendMessage }) => {
         <DialogOverlay/>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>TRADE OFFERED TO ME</DialogTitle>
+            <DialogTitle>You have been offered a trade by {fromPlayer}</DialogTitle>
           </DialogHeader>
+          YOU RECEIVE {offerMoney}, YOU RECEIVE {requestMoney}
           <DialogFooter>
             <Button onClick={handleAccept}>ACCEPT</Button>
             <Button onClick={handleReject}>REJECT</Button>

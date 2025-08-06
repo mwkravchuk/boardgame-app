@@ -9,18 +9,45 @@ import (
 
 func Roll(s *network.Server, sender *shared.Client, msg shared.Message) {
 	room, ok := IsInValidRoom(s, sender)
-
-	displayName := room.GameState.Players[sender.Id].DisplayName
 	if !ok {
 		return
 	}
 
+	player := room.GameState.Players[sender.Id]
+	displayName := player.DisplayName
+
+	// Roll the dice
 	d1, d2 := rand.Intn(6) + 1, rand.Intn(6) + 1
 	totalDice := d1 + d2
+
+	// Update game state
 	room.GameState.LastRoll = totalDice
-	player := room.GameState.Players[sender.Id]
 	player.Position = (player.Position + totalDice) % 40
 	player.HasRolled = true
+
+	// Send messages based on state of property
+	property := &room.GameState.Properties[player.Position]
+
+	if property.IsProperty {
+		if !property.IsOwned {
+			s.Signal(sender, shared.Message{
+				Type: "can_buy_property",
+				Data: map[string]interface{}{
+					"property": property,
+				},
+			})
+		} else if property.IsOwned && property.OwnerID != player.ID && !property.IsMortgaged {
+			rent := CalculateRent(room.GameState.Players[property.OwnerID], player.Position, room.GameState)
+			s.Signal(sender, shared.Message{
+				Type: "owe_rent",
+				Data: map[string]interface{}{
+					"property": property,
+					"rent": rent,
+					"displayName": room.GameState.Players[property.OwnerID].DisplayName,
+				},
+			})
+		}
+	}
 
 	s.BroadcastToRoom(room, shared.Message{
 		Type:   "dice_rolled",
